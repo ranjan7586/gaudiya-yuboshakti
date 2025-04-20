@@ -1,0 +1,9 @@
+@import "tailwindcss";
+@theme {
+    --color-orange-500: #e24c00;
+    --color-gray-500: #dcdcdc;
+}
+
+.top-nav{
+    box-shadow: 0 3px 6px #00000029;
+}
