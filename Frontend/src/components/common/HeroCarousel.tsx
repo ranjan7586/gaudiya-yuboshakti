@@ -1,6 +1,5 @@
-import React, { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
-type Props = {}
 const blogs: { image: string; title: string; description: string }[] = [
   {
     image: 'https://images.pexels.com/photos/158063/bellingrath-gardens-alabama-landscape-scenic-158063.jpeg',
@@ -20,7 +19,7 @@ const blogs: { image: string; title: string; description: string }[] = [
 ];
 
 
-const HeroCarousel = (props: Props) => {
+const HeroCarousel = () => {
   const carouselRef = useRef<HTMLDivElement>(null);
   const [isSliding, setIsSliding] = useState<boolean>(false);
   const [currentIndex, setCurrentIndex] = useState<number>(0);

@@ -1,9 +1,34 @@
 import { useState, useEffect } from 'react';
-import { ChevronRight, Heart, MessageCircle, Share2, Bookmark, Clock, Calendar, User } from 'lucide-react';
+import { ChevronRight, Heart, MessageCircle, Share2, Bookmark, Clock, Calendar } from 'lucide-react';
+interface Author {
+  name: string;
+  avatar: string;
+  role: string;
+  bio: string;
+}
 
+interface relatedPost {
+  id: number;
+  title: string;
+  image: string;
+}
+
+interface Post {
+  id: number;
+  title: string;
+  excerpt: string;
+  content: string;
+  featuredImage: string;
+  category: string;
+  tags: string[];
+  publishedDate: string;
+  readTime: string;
+  author: Author;
+  relatedPosts: relatedPost[];
+}
 export default function BlogDetails() {
   const [isLoading, setIsLoading] = useState(true);
-  const [post, setPost] = useState(null);
+  const [post, setPost] = useState<Post | null>(null);
   
   useEffect(() => {
     // Simulate loading post data
@@ -91,9 +116,9 @@ export default function BlogDetails() {
             <ChevronRight size={16} className="mx-2" />
             <a href="/blog" className="hover:text-blue-600">Blog</a>
             <ChevronRight size={16} className="mx-2" />
-            <a href={`/blog/category/${post.category.toLowerCase()}`} className="hover:text-blue-600">{post.category}</a>
+            <a href={`/blog/category/${post?.category.toLowerCase()}`} className="hover:text-blue-600">{post?.category}</a>
             <ChevronRight size={16} className="mx-2" />
-            <span className="text-gray-500 truncate max-w-xs">{post.title}</span>
+            <span className="text-gray-500 truncate max-w-xs">{post?.title}</span>
           </div>
         </div>
       </div>
@@ -102,30 +127,30 @@ export default function BlogDetails() {
         {/* Article Header */}
         <div className="mb-8">
           <div className="flex items-center space-x-2 mb-3">
-            <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded">{post.category}</span>
+            <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded">{post?.category}</span>
           </div>
           
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">{post.title}</h1>
+          <h1 className="text-4xl font-bold text-gray-900 mb-4">{post?.title}</h1>
           
-          <p className="text-xl text-gray-600 mb-6">{post.excerpt}</p>
+          <p className="text-xl text-gray-600 mb-6">{post?.excerpt}</p>
           
           <div className="flex items-center space-x-6">
             <div className="flex items-center">
-              <img src={post.author.avatar} alt={post.author.name} className="w-10 h-10 rounded-full mr-3" />
+              <img src={post?.author.avatar} alt={post?.author.name} className="w-10 h-10 rounded-full mr-3" />
               <div>
-                <div className="font-medium text-gray-900">{post.author.name}</div>
-                <div className="text-sm text-gray-500">{post.author.role}</div>
+                <div className="font-medium text-gray-900">{post?.author.name}</div>
+                <div className="text-sm text-gray-500">{post?.author.role}</div>
               </div>
             </div>
             
             <div className="flex items-center text-gray-500 text-sm">
               <Calendar size={16} className="mr-1" />
-              <span>{post.publishedDate}</span>
+              <span>{post?.publishedDate}</span>
             </div>
             
             <div className="flex items-center text-gray-500 text-sm">
               <Clock size={16} className="mr-1" />
-              <span>{post.readTime}</span>
+              <span>{post?.readTime}</span>
             </div>
           </div>
         </div>
@@ -133,8 +158,8 @@ export default function BlogDetails() {
         {/* Featured Image */}
         <div className="mb-8 rounded-lg overflow-hidden shadow-lg">
           <img 
-            src={post.featuredImage} 
-            alt={post.title} 
+            src={post?.featuredImage} 
+            alt={post?.title} 
             className="w-full h-auto"
           />
         </div>
@@ -160,12 +185,12 @@ export default function BlogDetails() {
           {/* Main Content */}
           <div className="flex-1">
             <article className="prose prose-lg max-w-none">
-              <div dangerouslySetInnerHTML={{ __html: post.content }} />
+              <div dangerouslySetInnerHTML={{ __html: post?.content || '' }} />
             </article>
             
             {/* Tags */}
             <div className="mt-8 flex flex-wrap gap-2">
-              {post.tags.map((tag, index) => (
+              {post?.tags.map((tag, index) => (
                 <a 
                   key={index} 
                   href={`/blog/tag/${tag.toLowerCase()}`}
@@ -195,11 +220,11 @@ export default function BlogDetails() {
             {/* Author Bio */}
             <div className="mt-12 bg-blue-50 rounded-lg p-6">
               <div className="flex items-start space-x-4">
-                <img src={post.author.avatar} alt={post.author.name} className="w-16 h-16 rounded-full" />
+                <img src={post?.author.avatar} alt={post?.author.name} className="w-16 h-16 rounded-full" />
                 <div>
-                  <h3 className="font-bold text-lg text-gray-900">About {post.author.name}</h3>
-                  <p className="text-gray-700 mt-2">{post.author.bio}</p>
-                  <a href={`/author/${post.author.name.toLowerCase().replace(' ', '-')}`} className="mt-2 inline-block text-blue-600 hover:underline">
+                  <h3 className="font-bold text-lg text-gray-900">About {post?.author.name}</h3>
+                  <p className="text-gray-700 mt-2">{post?.author.bio}</p>
+                  <a href={`/author/${post?.author.name.toLowerCase().replace(' ', '-')}`} className="mt-2 inline-block text-blue-600 hover:underline">
                     View all posts
                   </a>
                 </div>
@@ -210,16 +235,16 @@ export default function BlogDetails() {
             <div className="mt-12">
               <h3 className="text-2xl font-bold text-gray-900 mb-6">Related Articles</h3>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {post.relatedPosts.map(relatedPost => (
-                  <a key={relatedPost.id} href={`/blog/${relatedPost.id}`} className="group">
+                {post?.relatedPosts.map(relatedPost => (
+                  <a key={relatedPost?.id} href={`/blog/${relatedPost?.id}`} className="group">
                     <div className="bg-white rounded-lg overflow-hidden shadow-md transition duration-300 group-hover:shadow-lg">
                       <img 
-                        src={relatedPost.image} 
-                        alt={relatedPost.title}
+                        src={relatedPost?.image} 
+                        alt={relatedPost?.title}
                         className="w-full h-40 object-cover"
                       />
                       <div className="p-4">
-                        <h4 className="font-semibold text-gray-900 group-hover:text-blue-600 transition duration-300">{relatedPost.title}</h4>
+                        <h4 className="font-semibold text-gray-900 group-hover:text-blue-600 transition duration-300">{relatedPost?.title}</h4>
                       </div>
                     </div>
                   </a>

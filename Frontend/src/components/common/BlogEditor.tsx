@@ -1,10 +1,9 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import ReactQuill from 'react-quill-new';
 import 'react-quill-new/dist/quill.snow.css';
 
-type Props = {}
 
-const BlogEditor = (props: Props) => {
+const BlogEditor = () => {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
 

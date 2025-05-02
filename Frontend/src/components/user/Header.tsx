@@ -1,10 +1,8 @@
-import React from 'react'
 import logo from '../../assets/logo.jpeg'
 import { NavLink } from 'react-router-dom'
 
-type Props = {}
 
-const Header = (props: Props) => {
+const Header = () => {
     return (
         <div className='p-5 border-t-4 border-orange-400'>
             <div className='flex items-center justify-around p-3'>

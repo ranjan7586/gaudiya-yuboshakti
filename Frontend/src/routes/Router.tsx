@@ -1,13 +1,11 @@
-import React from 'react'
 import Home from '../pages/user/Home'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import AdminPanel from '../pages/Admin/AdminPanel'
 import BlogEditor from '../components/common/BlogEditor'
 import BlogDetails from '../components/common/BlogDetails'
 
-type Props = {}
 
-const Router = (props: Props) => {
+const Router = () => {
   return (
     <BrowserRouter>
     <Routes>

@@ -1,6 +1,13 @@
 import { useState } from 'react';
-import { Search, Menu, X, Plus, Settings, Home, Edit3, Users, Tag, Grid, FileText, ChevronDown, LogOut, Moon, ArrowLeft, ArrowRight } from 'lucide-react';
-
+import { Search, Menu, X, Plus, Settings, Home, Users, Tag, Grid, FileText, ChevronDown, LogOut, Moon, ArrowLeft, ArrowRight } from 'lucide-react';
+interface SidebarItemProps {
+    icon: React.ReactNode;
+    label: string;
+    isOpen: boolean;
+    onClick: () => void;
+    isActive: boolean;
+    darkMode: boolean;
+}
 export default function AdminPanel() {
     const [sidebarOpen, setSidebarOpen] = useState(true);
     const [currentPage, setCurrentPage] = useState('posts');
@@ -135,7 +142,7 @@ export default function AdminPanel() {
     );
 }
 
-function SidebarItem({ icon, label, isOpen, onClick, isActive, darkMode }) {
+function SidebarItem({ icon, label, isOpen, onClick, isActive, darkMode }: SidebarItemProps) {
     return (
         <button
             onClick={onClick}
