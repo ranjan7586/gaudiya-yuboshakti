@@ -3,6 +3,7 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import AdminPanel from '../pages/Admin/AdminPanel'
 import BlogEditor from '../components/common/BlogEditor'
 import BlogDetails from '../components/common/BlogDetails'
+import AdminRoute from '../pages/Admin/AdminRoute'
 
 
 const Router = () => {
@@ -11,8 +12,13 @@ const Router = () => {
     <Routes>
         <Route path='/' element={<Home />} />
         <Route path='/blog' element={<BlogDetails />} />
-        <Route path='/admin' element={<AdminPanel />} />
-        <Route path='/admin/add-blog' element={<BlogEditor />} />
+        <Route path='/admin' element={<AdminRoute />} >
+          <Route path='add-blog' element={<BlogEditor />} />
+          <Route path='dashboard' element={<AdminPanel />} />
+        </Route>
+        {/* <Route path='/admin' element={<AdminPanel />} /> */}
+        {/* <Route path='/admin/add-blog' element={<BlogEditor />} /> */}
+
     </Routes>
     </BrowserRouter>
   )
