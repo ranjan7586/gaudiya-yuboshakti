@@ -1,4 +1,4 @@
-import { profile } from "console";
+import bcrypt from "bcrypt";
 import mongoose from "mongoose";
 
 interface IUser extends mongoose.Document {
@@ -31,11 +31,11 @@ const userSchema: mongoose.Schema = new mongoose.Schema<IUser>({
     },
     profileImage: {
         type: String,
-        required: true
+        required: false
     },
     bio: {
         type: String,
-        required: true
+        required: false
     },
     deletedAt: {
         type: Date,
@@ -43,6 +43,12 @@ const userSchema: mongoose.Schema = new mongoose.Schema<IUser>({
     }
 }, {
     timestamps: true
+});
+
+userSchema.pre<IUser>('save', async function (next) {
+    if (!this.isModified('password')) return next();
+    this.password = await bcrypt.hash(this.password, 10);
+    next();
 });
 
 const User = mongoose.model<IUser>('User', userSchema);

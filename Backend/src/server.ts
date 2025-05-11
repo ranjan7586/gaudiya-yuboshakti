@@ -1,6 +1,7 @@
 import express, { Request, Response } from 'express';
 import dotenv from 'dotenv';
 import connectDB from './DB/conn';
+import AuthRouter from './routes/auth';
 import NewsRouter from './routes/news';
 import UploadRouter from './routes/upload';
 
@@ -10,8 +11,8 @@ app.use(express.json());
 
 connectDB();
 app.use('/api/v1/news', NewsRouter);
+app.use('/api/v1/auth', AuthRouter);
 app.use('/api/v1/upload', UploadRouter);
-
 app.get('/api/v1', (_req: Request, res: Response) => {
     res.send('Server is running!');
 });
