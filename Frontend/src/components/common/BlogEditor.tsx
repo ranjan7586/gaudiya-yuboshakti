@@ -20,15 +20,15 @@ const BlogEditor = () => {
 
   return (
     <div className="max-w-4xl mx-auto p-6 bg-white shadow-md rounded-lg mt-10">
-      <h1 className="text-3xl font-bold text-orange-600 mb-6">✍️ Create New Blog</h1>
+      {/* <h1 className="text-3xl font-bold text-orange-600 mb-6">✍️ Create New Blog</h1> */}
 
-      <input
+      {/* <input
         type="text"
         value={title}
         onChange={(e) => setTitle(e.target.value)}
         placeholder="Enter blog title"
         className="w-full p-3 mb-6 text-lg border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-orange-400"
-      />
+      /> */}
 
       <ReactQuill
         theme="snow"
@@ -58,12 +58,12 @@ const BlogEditor = () => {
         ]}
       />
 
-      <button
+      {/* <button
         onClick={handlePublish}
         className="bg-orange-500 hover:bg-orange-600 text-white font-semibold px-6 py-3 rounded transition-all duration-300"
       >
         🚀 Publish Blog
-      </button>
+      </button> */}
     </div>
   );
 };

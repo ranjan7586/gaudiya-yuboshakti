@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { Calendar, Clock, Image, Users, Bookmark, User, FileText } from 'lucide-react';
+import AdminSidebar from '../../components/Admin/AdminSidebar';
+import BlogEditor from '../../components/common/BlogEditor';
 
 export default function NewsSubmissionForm() {
   const [formData, setFormData] = useState({
@@ -14,6 +16,13 @@ export default function NewsSubmissionForm() {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [currentPage, setCurrentPage] = useState('posts');
+  const [darkMode, setDarkMode] = useState(true);
+
+  const toggleSidebar = () => {
+    setSidebarOpen(!sidebarOpen);
+  };
 
   const handleChange = (e: any) => {
     const { name, value } = e.target;
@@ -23,17 +32,17 @@ export default function NewsSubmissionForm() {
   const handleSubmit = (e: any) => {
     e.preventDefault();
     setIsSubmitting(true);
-    
+
     // Simulate API call
     setTimeout(() => {
       setIsSubmitting(false);
       setIsSuccess(true);
-      
+
       // Reset success message after 3 seconds
       setTimeout(() => {
         setIsSuccess(false);
       }, 3000);
-      
+
       // Reset form
       setFormData({
         title: '',
@@ -48,7 +57,7 @@ export default function NewsSubmissionForm() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 text-gray-900">
+    <div className="min-h-screen bg-gray-50 text-white">
       {/* Header */}
       <header className="bg-gray-900 text-white px-6 py-4">
         <div className="max-w-6xl mx-auto flex justify-between items-center">
@@ -71,31 +80,18 @@ export default function NewsSubmissionForm() {
 
       <div className="flex">
         {/* Sidebar */}
-        <aside className="w-64 bg-gray-800 text-white min-h-screen">
-          <div className="p-4">
-            <nav className="mt-6 space-y-1">
-              <div className="flex items-center px-4 py-3 bg-gray-700 rounded-lg">
-                <FileText className="mr-3" size={20} />
-                <span>Posts</span>
-              </div>
-              <div className="flex items-center px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-white rounded-lg">
-                <Image className="mr-3" size={20} />
-                <span>Media</span>
-              </div>
-              <div className="flex items-center px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-white rounded-lg">
-                <Users className="mr-3" size={20} />
-                <span>Users</span>
-              </div>
-              <div className="flex items-center px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-white rounded-lg">
-                <Bookmark className="mr-3" size={20} />
-                <span>Categories</span>
-              </div>
-            </nav>
-          </div>
-        </aside>
+          <AdminSidebar
+            sidebarOpen={sidebarOpen}
+            setSidebarOpen={setSidebarOpen}
+            currentPage={currentPage}
+            setCurrentPage={setCurrentPage}
+            darkMode={darkMode}
+            setDarkMode={setDarkMode}
+            toggleSidebar={toggleSidebar}
+          />
 
         {/* Main Content */}
-        <main className="flex-1 p-6">
+        <main className="flex-1 p-6 text-gray-900">
           <div className="max-w-4xl mx-auto">
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-2xl font-bold">Add New Article</h2>
@@ -131,7 +127,7 @@ export default function NewsSubmissionForm() {
                   <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
                     Description
                   </label>
-                  <textarea
+                  {/* <textarea
                     id="description"
                     name="description"
                     value={formData.description}
@@ -140,7 +136,8 @@ export default function NewsSubmissionForm() {
                     className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     placeholder="Enter article content"
                     required
-                  />
+                  /> */}
+                  <BlogEditor/>
                 </div>
 
                 {/* Category */}
@@ -263,10 +260,10 @@ export default function NewsSubmissionForm() {
                       Thumbnail Preview
                     </label>
                     <div className="w-32 h-32 border border-gray-300 rounded-md overflow-hidden">
-                      <img 
-                        src="/api/placeholder/320/320" 
+                      <img
+                        src="/api/placeholder/320/320"
                         alt="Thumbnail preview"
-                        className="w-full h-full object-cover" 
+                        className="w-full h-full object-cover"
                       />
                     </div>
                   </div>
@@ -277,9 +274,8 @@ export default function NewsSubmissionForm() {
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className={`px-6 py-2 rounded-md text-white font-medium ${
-                      isSubmitting ? 'bg-blue-400' : 'bg-blue-600 hover:bg-blue-700'
-                    } focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all`}
+                    className={`px-6 py-2 rounded-md text-white font-medium ${isSubmitting ? 'bg-blue-400' : 'bg-blue-600 hover:bg-blue-700'
+                      } focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all`}
                   >
                     {isSubmitting ? 'Publishing...' : 'Publish Article'}
                   </button>
