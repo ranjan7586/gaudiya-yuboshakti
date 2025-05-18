@@ -20,6 +20,10 @@ app.use(cors({
 }));
 app.use(express.json());
 
+// Increase the limit to, for example, 10MB
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
 connectDB();
 app.use('/api/v1/news', NewsRouter);
 app.use('/api/v1/auth', AuthRouter);

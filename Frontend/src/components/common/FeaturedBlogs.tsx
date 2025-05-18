@@ -1,3 +1,4 @@
+import { Link, NavLink } from "react-router-dom";
 
 const FeaturedBlogs = () => {
     const featuredPosts = [
@@ -56,61 +57,61 @@ const FeaturedBlogs = () => {
                         <h2 className="text-3xl font-bold text-gray-800 mb-2">Featured Articles</h2>
                         <div className="w-16 h-1 bg-orange-500"></div>
                     </div>
-                    <a href="#" className="text-indigo-600 font-medium flex items-center hover:text-indigo-800 transition-colors">
+                    <NavLink to={"/list/featured"} className="text-indigo-600 font-medium flex items-center hover:text-indigo-800 transition-colors">
                         View All
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7-7 7" />
                         </svg>
-                    </a>
+                    </NavLink>
                 </div>
 
                 {/* Horizontal Scrolling Blog Posts */}
                 <div className="relative">
                     <div className="flex overflow-x-auto pb-8 space-x-6 hide-scrollbar">
                         {featuredPosts.map((post) => (
-                            <div
-                                key={post.id}
-                                className="flex-none w-72 md:w-80 bg-white rounded-lg overflow-hidden shadow-lg transition-transform duration-300 hover:shadow-xl hover:-translate-y-1"
-                            >
-                                {/* Featured Image */}
-                                <div className="relative">
-                                    <img
-                                        src={post.image}
-                                        alt={post.title}
-                                        className="w-full h-48 object-cover"
-                                    />
-                                    <div className="absolute top-4 left-4">
-                                        <span className="px-3 py-1 bg-orange-500 text-white text-xs font-semibold rounded-full">
-                                            {post.category}
-                                        </span>
-                                    </div>
-                                </div>
-
-                                {/* Content */}
-                                <div className="p-5">
-                                    <h3 className="text-lg font-bold text-gray-800 mb-2 line-clamp-2">
-                                        {post.title}
-                                    </h3>
-                                    <p className="text-gray-600 mb-4 text-sm line-clamp-2">
-                                        {post.excerpt}
-                                    </p>
-
-                                    {/* Author and Meta Info */}
-                                    <div className="flex items-center pt-3 border-t border-gray-100">
+                            <Link to={`/blog/details/${post.id}`} key={post.id} className="flex-none w-72 md:w-80">
+                                <div className="bg-white rounded-lg overflow-hidden shadow-lg transition-transform duration-300 hover:shadow-xl hover:-translate-y-1">
+                                    {/* Featured Image */}
+                                    <div className="relative">
                                         <img
-                                            src={post.authorImage}
-                                            alt={post.author}
-                                            className="w-8 h-8 rounded-full mr-3"
+                                            src={post.image}
+                                            alt={post.title}
+                                            className="w-full h-48 object-cover"
                                         />
-                                        <div>
-                                            <p className="text-sm font-medium text-gray-800">{post.author}</p>
-                                            <p className="text-xs text-gray-500">{post.date} • {post.readTime}</p>
+                                        <div className="absolute top-4 left-4">
+                                            <span className="px-3 py-1 bg-orange-500 text-white text-xs font-semibold rounded-full">
+                                                {post.category}
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    {/* Content */}
+                                    <div className="p-5">
+                                        <h3 className="text-lg font-bold text-gray-800 mb-2 line-clamp-2">
+                                            {post.title}
+                                        </h3>
+                                        <p className="text-gray-600 mb-4 text-sm line-clamp-2">
+                                            {post.excerpt}
+                                        </p>
+
+                                        {/* Author and Meta Info */}
+                                        <div className="flex items-center pt-3 border-t border-gray-100">
+                                            <img
+                                                src={post.authorImage}
+                                                alt={post.author}
+                                                className="w-8 h-8 rounded-full mr-3"
+                                            />
+                                            <div>
+                                                <p className="text-sm font-medium text-gray-800">{post.author}</p>
+                                                <p className="text-xs text-gray-500">{post.date} • {post.readTime}</p>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                            </Link>
                         ))}
                     </div>
+
 
                     {/* Optional scroll indicators */}
                     <div className="absolute left-0 top-1/2 -translate-y-1/2 hidden md:block">

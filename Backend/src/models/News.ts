@@ -3,7 +3,7 @@ interface INews extends mongoose.Document {
     title: string;
     description: string;
     category: string;
-    author: string;
+    author: mongoose.Schema.Types.ObjectId;
     date: string;
     readTime: string;
     thumbnail_img: string;
@@ -24,7 +24,8 @@ const newsSchema: mongoose.Schema = new mongoose.Schema<INews>({
         required: true
     },
     author: {
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
         required: true
     },
     date: {
@@ -37,7 +38,7 @@ const newsSchema: mongoose.Schema = new mongoose.Schema<INews>({
     },
     thumbnail_img: {
         type: String,
-        required: true
+        required: false
     },
     deletedAt: {
         type: Date,

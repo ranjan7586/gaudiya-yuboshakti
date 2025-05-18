@@ -17,6 +17,7 @@ class NewsService {
             data.body.thumbnail_img = result.url;
             console.log(result);
         }
+        // data.body.author = data.body?.auth_user?.id;
         const result = await News.create(data.body);
         return result;
     }

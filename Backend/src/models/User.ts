@@ -9,6 +9,7 @@ interface IUser extends mongoose.Document {
     profileImage: string;
     bio: string;
     deletedAt: Date;
+    comparePassword(password: string): Promise<boolean>;
 }
 
 const userSchema: mongoose.Schema = new mongoose.Schema<IUser>({
@@ -50,6 +51,11 @@ userSchema.pre<IUser>('save', async function (next) {
     this.password = await bcrypt.hash(this.password, 10);
     next();
 });
+
+userSchema.methods.comparePassword = async function (password: string) {
+    console.log(password, this.password);
+    return await bcrypt.compare(password, this.password);
+};
 
 const User = mongoose.model<IUser>('User', userSchema);
 

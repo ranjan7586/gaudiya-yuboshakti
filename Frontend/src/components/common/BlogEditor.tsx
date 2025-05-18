@@ -2,12 +2,16 @@ import { useState } from 'react';
 import ReactQuill from 'react-quill-new';
 import 'react-quill-new/dist/quill.snow.css';
 
-
-const BlogEditor = () => {
+interface BlogEditorProps {
+  value: string
+  setValue: React.Dispatch<React.SetStateAction<string>>
+}
+const BlogEditor = ({ value, setValue }: BlogEditorProps) => {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
 
   const handlePublish = () => {
+
     const blogData = {
       title,
       content,
@@ -17,6 +21,33 @@ const BlogEditor = () => {
     // TODO: Send to backend API
     alert('Blog Published!');
   };
+  const modules = {
+    toolbar: [
+      [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+      [{ 'font': [] }],
+      [{ 'size': ['small', false, 'large', 'huge'] }],
+      ['bold', 'italic', 'underline', 'strike',],
+      [{ 'color': [] }, { 'background': [] }],
+      [{ 'script': 'sub' }, { 'script': 'super' }],
+      [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+      [{ 'indent': '-1' }, { 'indent': '+1' }],
+      [{ 'direction': 'rtl' }],
+      [{ 'align': [] }],
+      ['blockquote', 'code-block'],
+      ['link', 'image', 'video', 'formula'],
+      ['clean']
+    ]
+  };
+
+  const formats = [
+    'header', 'font', 'size',
+    'bold', 'italic', 'underline', 'strike',
+    'color', 'background',
+    'script', 'blockquote', 'code-block',
+    'list', 'bullet', 'indent', 'direction',
+    'align',
+    'link', 'image', 'video', 'formula'
+  ];
 
   return (
     <div className="max-w-4xl mx-auto p-6 bg-white shadow-md rounded-lg mt-10">
@@ -32,30 +63,12 @@ const BlogEditor = () => {
 
       <ReactQuill
         theme="snow"
-        value={content}
-        onChange={setContent}
+        value={value}
+        onChange={setValue}
         placeholder="Start writing your blog..."
         className="mb-6"
-        modules={{
-          toolbar: [
-            [{ header: [1, 2, 3, false] }],
-            ['bold', 'italic', 'underline', 'strike'],
-            [{ list: 'ordered' }, { list: 'bullet' }],
-            ['link', 'image'],
-            ['clean'],
-          ],
-        }}
-        formats={[
-          'header',
-          'bold',
-          'italic',
-          'underline',
-          'strike',
-          'list',
-          'bullet',
-          'link',
-          'image',
-        ]}
+        modules={modules}
+        formats={formats}
       />
 
       {/* <button

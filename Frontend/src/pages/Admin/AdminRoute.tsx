@@ -11,8 +11,10 @@ const AdminRoute = (props: Props) => {
     const [isLoading, setIsLoading] = React.useState(true);
     const checkAdminStatus = async () => {
         try {
-            const response = await axiosAuth.get(`${backendUrl}/api/v1/admin/check`);
-            setIsAdmin(response.data.isAdmin);
+            const { data } = await axiosAuth.post(`${backendUrl}/api/v1/auth/role-check`);
+            console.log(data.data)
+            // if (data.data !== 'admin') window.location.href = '/';
+            setIsAdmin(data.data === 'admin');
         } catch (error) {
             setError(error);
         }
