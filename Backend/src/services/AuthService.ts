@@ -25,6 +25,7 @@ class AuthService {
             if (!isMatch) throw new Error('Invalid credentials');
         }
         const token = this.generateJWT(user._id);
+        delete (user as any).password;
         return { user, token };
     }
 

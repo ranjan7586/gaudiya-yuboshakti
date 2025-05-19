@@ -8,7 +8,8 @@ const axiosAuth = axios.create({
 });
 console.log(axiosAuth.interceptors.request)
 axiosAuth.interceptors.request.use((config) => {
-    const token = localStorage.getItem('token');
+    const currentUser = localStorage.getItem('currentUser');
+    const token = currentUser ? JSON.parse(currentUser).token : null;
     if (token) {
         config.headers.Authorization = `Bearer ${token}`;
     }

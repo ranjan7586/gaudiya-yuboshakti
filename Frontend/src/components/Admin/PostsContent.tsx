@@ -1,17 +1,47 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { NavLink } from 'react-router-dom';
-import { Search, Menu, X, Plus, Settings, Home, Users, Tag, Grid, FileText, ChevronDown, LogOut, Moon, ArrowLeft, ArrowRight } from 'lucide-react';
+import axiosAuth from '../../config/axios_auth';
+import { Plus, ArrowLeft, ArrowRight } from 'lucide-react';
 
 type Props = {}
+interface Post {
+    _id: number;
+    title: string;
+    author: any; // or define a type for author if you know it
+    category: string;
+    status: string;
+    date: string;
+}
 
 const PostsContent = (props: Props) => {
-    const posts = [
-        { id: 1, title: 'Getting Started with React', author: 'John Doe', category: 'Development', status: 'Published', date: 'Apr 10, 2025' },
-        { id: 2, title: 'Mastering TypeScript', author: 'Jane Smith', category: 'Development', status: 'Draft', date: 'Apr 15, 2025' },
-        { id: 3, title: 'Tailwind CSS Tips and Tricks', author: 'John Doe', category: 'Design', status: 'Published', date: 'Apr 12, 2025' },
-        { id: 4, title: 'Building Modern Web Applications', author: 'Lisa Jones', category: 'Development', status: 'Review', date: 'Apr 18, 2025' },
-        { id: 5, title: 'SEO Best Practices for 2025', author: 'Mark Wilson', category: 'Marketing', status: 'Published', date: 'Apr 5, 2025' },
-    ];
+    const [posts, setPosts] = React.useState<Post[]>([]);
+    const [author, setAuthor] = React.useState<any>([]);
+
+    const fetchPosts = async () => {
+        try {
+            const { data } = await axiosAuth.post(`${import.meta.env.VITE_BACKEND_URL}/api/v1/blog/list`, {
+                page: 1,
+                limit: 10
+            });
+            if (data?.data) setPosts(data.data);
+            console.log(data)
+        } catch (error) {
+            console.log(error)
+        }
+    }
+    const fetchUsers = async () => {
+        try {
+            const { data } = await axiosAuth.post(`${import.meta.env.VITE_BACKEND_URL}/api/v1/auth/users`);
+            if (data?.data) setAuthor(data.data);
+            console.log(data)
+        } catch (error) {
+            console.log(error)
+        }
+    }
+    useEffect(() => {
+        fetchPosts();
+        fetchUsers();
+    }, [])
     return (
         <div>
             <div className="flex justify-between items-center mb-6">
@@ -37,7 +67,7 @@ const PostsContent = (props: Props) => {
                 </div>
 
                 {posts.map(post => (
-                    <div key={post.id} className="grid grid-cols-12 gap-4 p-4 border-b hover:bg-gray-50 dark:hover:bg-gray-800">
+                    <div key={post._id} className="grid grid-cols-12 gap-4 p-4 border-b hover:bg-gray-50 dark:hover:bg-gray-800">
                         <div className="col-span-5 flex items-center">
                             <div className="flex-1">
                                 <div className="font-medium">{post.title}</div>
@@ -48,7 +78,7 @@ const PostsContent = (props: Props) => {
                                 </div>
                             </div>
                         </div>
-                        <div className="col-span-2">{post.author}</div>
+                        <div className="col-span-2">{author.find((author: any) => author._id === post.author)?.name}</div>
                         <div className="col-span-2">{post.category}</div>
                         <div className="col-span-1">
                             <span className={`px-2 py-1 rounded-full text-xs ${post.status === 'Published' ? 'bg-green-100 text-green-800' :

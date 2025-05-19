@@ -8,6 +8,8 @@ router.post('/list', async (req: Request, res: Response) => {
     await NewsController.index(req, res);
 });
 
+
+
 router.post('/create', upload.single('thumbnail_img'), async (req: Request, res: Response) => {
     await NewsController.create(req, res);
 })
@@ -20,7 +22,9 @@ router.delete('/delete/:id', async (req: Request, res: Response) => {
     await NewsController.delete(req, res);
 })
 
-
+router.get('/:id', async (req: Request, res: Response) => {
+    await NewsController.show(req, res);
+})
 
 
 export default router

@@ -21,9 +21,11 @@ class NewsController {
         try {
             const page = req.body?.page || 1;
             const sort_by = req.body?.sort_by || 'date';
+            const filter_by = req.body?.filterBy || '';
+            const filter_type = req.body?.filterType || '';
             const sort_order = req.body?.sort_order || 'desc';
             const display_per_page = req.body?.display_per_page || 10;
-            const result = await NewsService.getNews(page, display_per_page, sort_by, sort_order);
+            const result = await NewsService.getNews(page, display_per_page, sort_by, sort_order, filter_by, filter_type);
             return res.status(200).json({ message: 'News fetched successfully', data: result });
         } catch (error) {
             return res.status(500).json({ message: error instanceof Error ? error.message : 'Unknown error' });
@@ -50,6 +52,15 @@ class NewsController {
         try {
             const result = await NewsService.deleteNews(req.params.id);
             return res.status(200).json({ message: 'News deleted successfully', data: true });
+        } catch (error) {
+            return res.status(500).json({ message: error instanceof Error ? error.message : 'Unknown error' });
+        }
+    }
+
+    async show(req: Request, res: Response) {
+        try {
+            const result = await NewsService.getNewsById(req.params.id);
+            return res.status(200).json({ message: 'News fetched successfully', data: result });
         } catch (error) {
             return res.status(500).json({ message: error instanceof Error ? error.message : 'Unknown error' });
         }

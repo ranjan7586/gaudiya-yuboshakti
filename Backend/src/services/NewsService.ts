@@ -22,8 +22,13 @@ class NewsService {
         return result;
     }
 
-    async getNews(page: number, display_per_page: number, sort_by: string, sort_order: any) {
+    async getNews(page: number, display_per_page: number, sort_by: string, sort_order: any, filter_by: string, filter_type: string) {
         sort_order = sort_order === 'asc' ? 1 : -1;
+        if (filter_type && filter_by) {
+            console.log(filter_type, filter_by)
+            const result = await News.find({ [filter_type]: filter_by }).sort({ [sort_by]: sort_order }).skip((page - 1) * display_per_page).limit(display_per_page);
+            return result;
+        }
         const result = await News.find().sort({ [sort_by]: sort_order }).skip((page - 1) * display_per_page).limit(display_per_page);
         return result;
     }
@@ -40,6 +45,11 @@ class NewsService {
 
     async deleteNews(id: string) {
         const result = await News.findOneAndUpdate({ _id: id }, { deletedAt: new Date() }, { new: true });
+        return result;
+    }
+
+    async getNewsById(id: string) {
+        const result = await News.findOne({ _id: id });
         return result;
     }
 }

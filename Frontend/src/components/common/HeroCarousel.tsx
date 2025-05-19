@@ -1,41 +1,57 @@
 import axios from 'axios';
 import { use, useEffect, useRef, useState } from 'react'
 
-const blogs: { thumbnail_img: string; title: string; description: string }[] = [
-  {
-    thumbnail_img: 'https://images.pexels.com/photos/158063/bellingrath-gardens-alabama-landscape-scenic-158063.jpeg',
-    title: 'The Rise of Entrepreneurship',
-    description: 'Exploring business trends in 2025 and beyond.',
-  },
-  {
-    thumbnail_img: 'https://images.pexels.com/photos/906150/pexels-photo-906150.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
-    title: 'Healthy Eating Habits',
-    description: 'How food culture is reshaping our health.',
-  },
-  {
-    thumbnail_img: 'https://images.pexels.com/photos/1108572/pexels-photo-1108572.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
-    title: 'Global Economy in Crisis?',
-    description: 'A deep dive into recent economic shifts.',
-  },
-];
-
+// const blogs: { thumbnail_img: string; title: string; description: string }[] = [
+//   {
+//     thumbnail_img: 'https://images.pexels.com/photos/158063/bellingrath-gardens-alabama-landscape-scenic-158063.jpeg',
+//     title: 'The Rise of Entrepreneurship',
+//     description: 'Exploring business trends in 2025 and beyond.',
+//   },
+//   {
+//     thumbnail_img: 'https://images.pexels.com/photos/906150/pexels-photo-906150.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
+//     title: 'Healthy Eating Habits',
+//     description: 'How food culture is reshaping our health.',
+//   },
+//   {
+//     thumbnail_img: 'https://images.pexels.com/photos/1108572/pexels-photo-1108572.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
+//     title: 'Global Economy in Crisis?',
+//     description: 'A deep dive into recent economic shifts.',
+//   },
+// ];
+interface Blog {
+  thumbnail_img: string;
+  title: string;
+  description: string;
+}
 
 const HeroCarousel = () => {
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10);
+  const [blogs, setBlogs] = useState<Blog[]>([]);
   const carouselRef = useRef<HTMLDivElement>(null);
   const [heroBlogs, setHeroBlogs] = useState<any>([]);
   const [isSliding, setIsSliding] = useState<boolean>(false);
   const [currentIndex, setCurrentIndex] = useState<number>(0);
 
   const getHeroBlogs = async () => {
-    console.log("enter")
-    const { data } = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/v1/news/list`);
-    setHeroBlogs(data.data);
-    blogs.push(...data.data);
-    console.log(blogs)
+    try {
+      const { data } = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/v1/blog/list`, {
+        page: page,
+        limit: limit,
+        filterType: 'tags',
+        filterBy: 'latest',
+      });
+      setBlogs(data.data);
+    } catch (error) {
+      console.log(error)
+    }
   };
 
   // Create an extended array with duplicated first item at the end for seamless looping
-  const extendedBlogs = [...blogs, blogs[0]];
+  let extendedBlogs;
+  if (blogs && blogs.length > 0) {
+    extendedBlogs = [...blogs, blogs[0]];
+  }
 
   const handleTransitionEnd = () => {
     // When we reach the cloned first slide (at position length), 
@@ -108,31 +124,33 @@ const HeroCarousel = () => {
   return (
     <div className="relative h-auto w-4/5 mx-auto mt-10 shadow-lg rounded-lg overflow-hidden">
       <div className="relative w-full h-96 sm:h-150 overflow-hidden">
-        <div
-          ref={carouselRef}
-          className="flex transition-transform duration-500 ease-in-out h-full"
-          style={{
-            width: `${extendedBlogs.length * 100}%`,
-            transform: `translateX(-${(currentIndex * (100 / extendedBlogs.length))}%)`
-          }}
-          onTransitionEnd={handleTransitionEnd}
-        >
-          {extendedBlogs.map((blog, index) => (
-            <div key={index} className="flex-shrink-0" style={{ width: `${100 / extendedBlogs.length}%` }}>
-              <div className="relative w-full h-full">
-                <img
-                  src={blog.thumbnail_img}
-                  alt={blog.title}
-                  className="w-4/5 h-full object-cover"
-                />
-                <div className="absolute bottom-1/2 left-3/5 right-0 bg-gray-500 bg-opacity-90 p-4">
-                  <h2 className="text-xl font-bold text-orange-600">{blog.title}</h2>
-                  <p className="text-gray-600">{blog.description}</p>
+        {extendedBlogs && extendedBlogs.length > 0 && (
+          <div
+            ref={carouselRef}
+            className="flex transition-transform duration-500 ease-in-out h-full"
+            style={{
+              width: `${extendedBlogs.length * 100}%`,
+              transform: `translateX(-${(currentIndex * (100 / extendedBlogs.length))}%)`
+            }}
+            onTransitionEnd={handleTransitionEnd}
+          >
+            {extendedBlogs && extendedBlogs.map((blog, index) => (
+              <div key={index} className="flex-shrink-0" style={{ width: `${100 / extendedBlogs.length}%` }}>
+                <div className="relative w-full h-full">
+                  <img
+                    src={blog.thumbnail_img}
+                    alt={blog.title}
+                    className="w-4/5 h-full object-cover"
+                  />
+                  <div className="absolute bottom-1/2 left-3/5 right-0 bg-gray-500 bg-opacity-90 p-4">
+                    <h2 className="text-xl font-bold text-orange-600">{blog.title}</h2>
+                    <p className="text-gray-600">{blog.description}</p>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Navigation Arrows */}

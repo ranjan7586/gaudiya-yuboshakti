@@ -1,53 +1,36 @@
+import axios from "axios";
+import React, { useState } from "react";
 import { Link, NavLink } from "react-router-dom";
-
+interface FeaturedBlogsProps {
+    _id: number;
+    title: string;
+    excerpt: string;
+    category: string;
+    author: any;
+    date: string;
+    readTime: string;
+    thumbnail_img: string;
+}
 const FeaturedBlogs = () => {
-    const featuredPosts = [
-        {
-            id: 1,
-            title: "The Future of Remote Work in 2025",
-            excerpt: "Exploring how companies are adapting to the new normal of distributed teams and digital collaboration.",
-            category: "Business",
-            author: "Sarah Johnson",
-            date: "April 15, 2025",
-            readTime: "8 min read",
-            image: "/api/placeholder/600/400",
-            authorImage: "/api/placeholder/40/40"
-        },
-        {
-            id: 2,
-            title: "Sustainable Living: Small Changes, Big Impact",
-            excerpt: "Practical ways to reduce your carbon footprint without drastically changing your lifestyle.",
-            category: "Lifestyle",
-            author: "Michael Chen",
-            date: "April 12, 2025",
-            readTime: "6 min read",
-            image: "/api/placeholder/600/400",
-            authorImage: "/api/placeholder/40/40"
-        },
-        {
-            id: 3,
-            title: "Machine Learning: Beyond the Hype",
-            excerpt: "A deep dive into actual business applications of ML that are creating value today.",
-            category: "Technology",
-            author: "Priya Sharma",
-            date: "April 10, 2025",
-            readTime: "10 min read",
-            image: "/api/placeholder/600/400",
-            authorImage: "/api/placeholder/40/40"
-        },
-        {
-            id: 4,
-            title: "The Renaissance of Analog Hobbies",
-            excerpt: "Why more people are turning to vinyl records, film photography, and handwritten journals.",
-            category: "Culture",
-            author: "James Wilson",
-            date: "April 8, 2025",
-            readTime: "7 min read",
-            image: "/api/placeholder/600/400",
-            authorImage: "/api/placeholder/40/40"
+    const [page, setPage] = useState(1);
+    const [limit, setLimit] = useState(10);
+    const [featuredPosts, setFeaturedPosts] = useState<FeaturedBlogsProps[]>([]);
+    const getFeaturedBlogs = async () => {
+        try {
+            const { data } = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/v1/blog/list`, {
+                page: page,
+                limit: limit,
+                filterType: 'tags',
+                filterBy: 'featured',
+            });
+            setFeaturedPosts(data.data);
+        } catch (error) {
+            console.log(error)
         }
-    ];
-
+    };
+    React.useEffect(() => {
+        getFeaturedBlogs();
+    }, []);
     return (
         <section className="py-16 bg-gradient-to-r from-gray-50 to-white">
             <div className="container mx-auto px-4">
@@ -69,12 +52,12 @@ const FeaturedBlogs = () => {
                 <div className="relative">
                     <div className="flex overflow-x-auto pb-8 space-x-6 hide-scrollbar">
                         {featuredPosts.map((post) => (
-                            <Link to={`/blog/details/${post.id}`} key={post.id} className="flex-none w-72 md:w-80">
+                            <Link to={`/blog/details/${post._id}`} key={post._id} className="flex-none w-72 md:w-80">
                                 <div className="bg-white rounded-lg overflow-hidden shadow-lg transition-transform duration-300 hover:shadow-xl hover:-translate-y-1">
                                     {/* Featured Image */}
                                     <div className="relative">
                                         <img
-                                            src={post.image}
+                                            src={post.thumbnail_img}
                                             alt={post.title}
                                             className="w-full h-48 object-cover"
                                         />
@@ -96,11 +79,11 @@ const FeaturedBlogs = () => {
 
                                         {/* Author and Meta Info */}
                                         <div className="flex items-center pt-3 border-t border-gray-100">
-                                            <img
-                                                src={post.authorImage}
+                                            {/* <img
+                                                src={}
                                                 alt={post.author}
                                                 className="w-8 h-8 rounded-full mr-3"
-                                            />
+                                            /> */}
                                             <div>
                                                 <p className="text-sm font-medium text-gray-800">{post.author}</p>
                                                 <p className="text-xs text-gray-500">{post.date} • {post.readTime}</p>

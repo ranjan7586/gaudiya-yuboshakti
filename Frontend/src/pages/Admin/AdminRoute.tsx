@@ -1,30 +1,40 @@
 import React from 'react';
-import { Outlet } from 'react-router-dom';
 import axiosAuth from '../../config/axios_auth';
+import { Outlet, useNavigate } from 'react-router-dom';
 
 type Props = {}
 
 const AdminRoute = (props: Props) => {
-    const backendUrl = import.meta.env.VITE_BACKEND_URL;
-    const [isAdmin, setIsAdmin] = React.useState(false);
+    const navigate: any = useNavigate();
     const [error, setError] = React.useState<any>(null);
-    const [isLoading, setIsLoading] = React.useState(true);
+    const backendUrl: string = import.meta.env.VITE_BACKEND_URL;
+    const [isAdmin, setIsAdmin] = React.useState<boolean | null>(null); // null means "not yet checked"
+
     const checkAdminStatus = async () => {
         try {
             const { data } = await axiosAuth.post(`${backendUrl}/api/v1/auth/role-check`);
-            console.log(data.data)
-            // if (data.data !== 'admin') window.location.href = '/';
-            setIsAdmin(data.data === 'admin');
+            const isAdminUser = data.data === 'admin';
+            if (!isAdminUser) {
+                localStorage.removeItem('currentUser');
+                navigate('/admin/login');
+                return;
+            }
+            setIsAdmin(true);
         } catch (error) {
             setError(error);
+            localStorage.removeItem('currentUser');
+            navigate('/admin/login');
+            return;
         }
-    }
+    };
+
     React.useEffect(() => {
         checkAdminStatus();
     }, []);
-    return (
-        <><Outlet /></>
-    )
-}
 
-export default AdminRoute
+    if (isAdmin === null) return <div>Checking admin access...</div>; // blocks render until check is done
+    if (error) return <div>Error: {error.message || 'Access denied'}</div>;
+    return <Outlet />;
+};
+
+export default AdminRoute;

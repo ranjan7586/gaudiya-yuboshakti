@@ -44,7 +44,7 @@ const BlogEditor = ({ value, setValue }: BlogEditorProps) => {
     'bold', 'italic', 'underline', 'strike',
     'color', 'background',
     'script', 'blockquote', 'code-block',
-    'list', 'bullet', 'indent', 'direction',
+    'list', 'indent', 'direction',
     'align',
     'link', 'image', 'video', 'formula'
   ];

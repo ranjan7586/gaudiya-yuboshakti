@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { ChevronRight, Heart, MessageCircle, Share2, Bookmark, Clock, Calendar } from 'lucide-react';
+import axios from 'axios';
 interface Author {
   name: string;
   avatar: string;
@@ -17,7 +18,7 @@ interface Post {
   id: number;
   title: string;
   excerpt: string;
-  content: string;
+  description: string;
   featuredImage: string;
   category: string;
   tags: string[];
@@ -29,60 +30,20 @@ interface Post {
 export default function BlogDetails() {
   const [isLoading, setIsLoading] = useState(true);
   const [post, setPost] = useState<Post | null>(null);
-  
+  const id = window.location.pathname.split('/').pop();
+  console.log(id)
+  const getPostDetails = async () => {
+    try {
+      const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/v1/blog/${id}`);
+      console.log(data)
+      setPost(data.data);
+    } catch (error) {
+      console.log(error)
+    }
+  }
   useEffect(() => {
-    // Simulate loading post data
-    setTimeout(() => {
-      setPost({
-        id: 1,
-        title: 'The Future of Web Development: Trends to Watch in 2025',
-        excerpt: 'Discover the emerging technologies and methodologies shaping the future of web development in 2025 and beyond.',
-        content: `
-          <p class="mb-4">The web development landscape continues to evolve at a remarkable pace, with new technologies, frameworks, and methodologies emerging constantly. As we look ahead to the rest of 2025, several key trends are poised to reshape how we build and experience the web.</p>
-          
-          <h2 class="text-2xl font-bold mt-8 mb-4">1. AI-Powered Development Tools</h2>
-          <p class="mb-4">Artificial intelligence has made significant inroads into web development workflows. Developers now leverage AI assistants that can generate code, debug applications, and even design user interfaces. These tools not only boost productivity but also help bridge the gap between experienced developers and newcomers to the field.</p>
-          <p class="mb-4">Code completion and suggestion systems have evolved beyond simple syntax hints to understand context and intent, offering sophisticated solutions that align with project requirements and best practices.</p>
-          
-          <h2 class="text-2xl font-bold mt-8 mb-4">2. WebAssembly Goes Mainstream</h2>
-          <p class="mb-4">WebAssembly (Wasm) has moved from an experimental technology to a mainstream solution for high-performance web applications. By allowing developers to run code written in languages like C++, Rust, and Go at near-native speed in browsers, Wasm has opened new possibilities for web applications that previously required native desktop solutions.</p>
-          <p class="mb-4">Gaming, video editing, and complex data visualization applications now deliver desktop-like performance within the browser, blurring the line between web and native applications.</p>
-          
-          <h2 class="text-2xl font-bold mt-8 mb-4">3. Edge Computing Integration</h2>
-          <p class="mb-4">Edge computing has transformed how web applications are delivered and executed. By running code closer to users rather than in centralized data centers, edge functions reduce latency and improve user experience. This architectural shift has enabled new classes of applications that require real-time processing and responsiveness.</p>
-          <p class="mb-4">The integration between CDNs and serverless platforms continues to deepen, allowing developers to deploy both static assets and dynamic functionality to the network edge with minimal configuration.</p>
-          
-          <h2 class="text-2xl font-bold mt-8 mb-4">4. Enhanced Web Accessibility</h2>
-          <p class="mb-4">Accessibility has rightfully moved from an afterthought to a fundamental consideration in web development. Browser tooling, testing frameworks, and development environments now include robust accessibility features by default, making it easier to create inclusive web experiences.</p>
-          <p class="mb-4">This shift reflects both regulatory requirements and a growing recognition that accessible design benefits all users, not just those with disabilities.</p>
-          
-          <h2 class="text-2xl font-bold mt-8 mb-4">5. Micro-Frontend Architecture</h2>
-          <p class="mb-4">As web applications grow in complexity, micro-frontend architectures have emerged as a solution for scaling development across large teams. By breaking down monolithic frontend codebases into smaller, independently deployable pieces, organizations can improve development velocity while maintaining system coherence.</p>
-          <p class="mb-4">Standardization of module federation and component communication patterns has addressed many of the early challenges with this approach, making it viable for more projects.</p>
-          
-          <h2 class="text-2xl font-bold mt-8 mb-4">Conclusion</h2>
-          <p class="mb-4">The web development field continues to evolve in exciting ways that enhance both developer experience and end-user satisfaction. By staying attuned to these trends and thoughtfully incorporating new tools and approaches, teams can build more powerful, accessible, and maintainable web applications.</p>
-          <p class="mb-4">As with any technological shift, the key is not to chase every new trend, but to evaluate which advances align with your project goals and user needs. The most successful web development teams will be those that strike the right balance between innovation and pragmatism.</p>
-        `,
-        featuredImage: "/api/placeholder/1200/600",
-        category: "Web Development",
-        tags: ["JavaScript", "React", "Web Technology", "Programming"],
-        publishedDate: "April 15, 2025",
-        readTime: "8 min read",
-        author: {
-          name: "Alex Morgan",
-          avatar: "/api/placeholder/80/80",
-          role: "Senior Frontend Developer",
-          bio: "Alex has been developing web applications for over 10 years and specializes in frontend architecture and performance optimization."
-        },
-        relatedPosts: [
-          { id: 2, title: "Getting Started with WebAssembly in 2025", image: "/api/placeholder/400/250" },
-          { id: 3, title: "Building Accessible Web Applications: A Comprehensive Guide", image: "/api/placeholder/400/250" },
-          { id: 4, title: "The State of JavaScript Frameworks in 2025", image: "/api/placeholder/400/250" }
-        ]
-      });
-      setIsLoading(false);
-    }, 1000);
+    getPostDetails();
+    setIsLoading(false);
   }, []);
 
   if (isLoading) {
@@ -185,7 +146,7 @@ export default function BlogDetails() {
           {/* Main Content */}
           <div className="flex-1">
             <article className="prose prose-lg max-w-none">
-              <div dangerouslySetInnerHTML={{ __html: post?.content || '' }} />
+              <div dangerouslySetInnerHTML={{ __html: post?.description || '' }} />
             </article>
             
             {/* Tags */}
@@ -224,9 +185,9 @@ export default function BlogDetails() {
                 <div>
                   <h3 className="font-bold text-lg text-gray-900">About {post?.author.name}</h3>
                   <p className="text-gray-700 mt-2">{post?.author.bio}</p>
-                  <a href={`/author/${post?.author.name.toLowerCase().replace(' ', '-')}`} className="mt-2 inline-block text-blue-600 hover:underline">
+                  {/* <a href={`/author/${post?.author.name.toLowerCase().replace(' ', '-')}`} className="mt-2 inline-block text-blue-600 hover:underline">
                     View all posts
-                  </a>
+                  </a> */}
                 </div>
               </div>
             </div>
@@ -235,7 +196,7 @@ export default function BlogDetails() {
             <div className="mt-12">
               <h3 className="text-2xl font-bold text-gray-900 mb-6">Related Articles</h3>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {post?.relatedPosts.map(relatedPost => (
+                {/* {post?.relatedPosts.map(relatedPost => (
                   <a key={relatedPost?.id} href={`/blog/${relatedPost?.id}`} className="group">
                     <div className="bg-white rounded-lg overflow-hidden shadow-md transition duration-300 group-hover:shadow-lg">
                       <img 
@@ -248,7 +209,7 @@ export default function BlogDetails() {
                       </div>
                     </div>
                   </a>
-                ))}
+                ))} */}
               </div>
             </div>
           </div>
