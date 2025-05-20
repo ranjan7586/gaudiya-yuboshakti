@@ -2,9 +2,9 @@ import React from 'react';
 import axiosAuth from '../../config/axios_auth';
 import { Outlet, useNavigate } from 'react-router-dom';
 
-type Props = {}
+// type Props = {}
 
-const AdminRoute = (props: Props) => {
+const AdminRoute = () => {
     const navigate: any = useNavigate();
     const [error, setError] = React.useState<any>(null);
     const backendUrl: string = import.meta.env.VITE_BACKEND_URL;

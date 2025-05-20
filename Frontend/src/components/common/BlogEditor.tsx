@@ -1,4 +1,4 @@
-import { useState } from 'react';
+// import { useState } from 'react';
 import ReactQuill from 'react-quill-new';
 import 'react-quill-new/dist/quill.snow.css';
 
@@ -7,20 +7,20 @@ interface BlogEditorProps {
   setValue: React.Dispatch<React.SetStateAction<string>>
 }
 const BlogEditor = ({ value, setValue }: BlogEditorProps) => {
-  const [title, setTitle] = useState('');
-  const [content, setContent] = useState('');
+  // const [title, setTitle] = useState('');
+  // const [content, setContent] = useState('');
 
-  const handlePublish = () => {
+  // const handlePublish = () => {
 
-    const blogData = {
-      title,
-      content,
-      date: new Date().toISOString(),
-    };
-    console.log(blogData);
-    // TODO: Send to backend API
-    alert('Blog Published!');
-  };
+  //   const blogData = {
+  //     title,
+  //     content,
+  //     date: new Date().toISOString(),
+  //   };
+  //   console.log(blogData);
+  //   // TODO: Send to backend API
+  //   alert('Blog Published!');
+  // };
   const modules = {
     toolbar: [
       [{ 'header': [1, 2, 3, 4, 5, 6, false] }],

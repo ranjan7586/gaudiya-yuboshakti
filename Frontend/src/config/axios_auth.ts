@@ -6,7 +6,6 @@ const axiosAuth = axios.create({
         "Content-Type": "application/json",
     }
 });
-console.log(axiosAuth.interceptors.request)
 axiosAuth.interceptors.request.use((config) => {
     const currentUser = localStorage.getItem('currentUser');
     const token = currentUser ? JSON.parse(currentUser).token : null;

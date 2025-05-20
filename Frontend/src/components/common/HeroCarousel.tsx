@@ -39,7 +39,7 @@ const HeroCarousel = () => {
         page: page,
         limit: limit,
         filterType: 'tags',
-        filterBy: 'latest',
+        filterBy: 'trending',
       });
       setBlogs(data.data);
     } catch (error) {
@@ -144,7 +144,8 @@ const HeroCarousel = () => {
                   />
                   <div className="absolute bottom-1/2 left-3/5 right-0 bg-gray-500 bg-opacity-90 p-4">
                     <h2 className="text-xl font-bold text-orange-600">{blog.title}</h2>
-                    <p className="text-gray-600">{blog.description}</p>
+                    {/* <p className="text-gray-600">{blog.description}</p> */}
+                    <div dangerouslySetInnerHTML={{ __html: blog.description.substring(0, 50) }} />
                   </div>
                 </div>
               </div>

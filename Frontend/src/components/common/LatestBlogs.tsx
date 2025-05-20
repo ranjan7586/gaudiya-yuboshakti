@@ -1,4 +1,5 @@
-import React from 'react';
+import axios from 'axios';
+import React, { useState } from 'react';
 
 interface Author {
   name: string;
@@ -6,7 +7,7 @@ interface Author {
 }
 
 interface BlogPost {
-  id: number;
+  _id: number;
   title: string;
   excerpt: string;
   category: string;
@@ -17,127 +18,26 @@ interface BlogPost {
 }
 
 const LatestBlogs: React.FC = () => {
-  const latestPosts: BlogPost[] = [
-    {
-      id: 1,
-      title: "The Psychology of Color in Web Design",
-      excerpt: "How different color choices affect user perception and behavior on websites.",
-      category: "Design",
-      author: {
-        name: "Emma Rodriguez",
-        image: "/api/placeholder/40/40"
-      },
-      date: "April 18, 2025",
-      readTime: "6 min read",
-      image: "/api/placeholder/600/400"
-    },
-    {
-      id: 2,
-      title: "Understanding Modern JavaScript Frameworks",
-      excerpt: "A comparison of React, Vue, and Angular for building interactive web applications.",
-      category: "Development",
-      author: {
-        name: "Alex Thompson",
-        image: "/api/placeholder/40/40"
-      },
-      date: "April 17, 2025",
-      readTime: "9 min read",
-      image: "/api/placeholder/600/400"
-    },
-    {
-      id: 3,
-      title: "The Rise of AI in Healthcare",
-      excerpt: "How artificial intelligence is transforming diagnosis and treatment in medicine.",
-      category: "Technology",
-      author: {
-        name: "Dr. Maya Patel",
-        image: "/api/placeholder/40/40"
-      },
-      date: "April 16, 2025",
-      readTime: "7 min read",
-      image: "/api/placeholder/600/400"
-    },
-    {
-      id: 4,
-      title: "Sustainable Fashion: Beyond the Trend",
-      excerpt: "How eco-friendly clothing is reshaping the fashion industry from production to consumption.",
-      category: "Lifestyle",
-      author: {
-        name: "Noah Garcia",
-        image: "/api/placeholder/40/40"
-      },
-      date: "April 15, 2025",
-      readTime: "5 min read",
-      image: "/api/placeholder/600/400"
-    },
-    {
-      id: 5,
-      title: "Financial Planning for Millennials",
-      excerpt: "Practical advice for saving, investing, and planning for the future in uncertain times.",
-      category: "Finance",
-      author: {
-        name: "Olivia Wilson",
-        image: "/api/placeholder/40/40"
-      },
-      date: "April 14, 2025",
-      readTime: "8 min read",
-      image: "/api/placeholder/600/400"
-    },
-    {
-      id: 6,
-      title: "The Science of Productivity",
-      excerpt: "Research-backed methods to improve focus, energy, and output in your daily work.",
-      category: "Productivity",
-      author: {
-        name: "Daniel Lee",
-        image: "/api/placeholder/40/40"
-      },
-      date: "April 13, 2025",
-      readTime: "10 min read",
-      image: "/api/placeholder/600/400"
-    },
-    /*
-    {
-      id: 7,
-      title: "Virtual Reality: The Next Education Revolution",
-      excerpt: "How immersive technologies are changing the way students learn complex concepts.",
-      category: "Education",
-      author: {
-        name: "Sofia Martinez",
-        image: "/api/placeholder/40/40"
-      },
-      date: "April 12, 2025",
-      readTime: "7 min read",
-      image: "/api/placeholder/600/400"
-    },
-    {
-      id: 8,
-      title: "Building Resilience in Uncertain Times",
-      excerpt: "Psychological tools for maintaining mental health during periods of change and stress.",
-      category: "Wellness",
-      author: {
-        name: "Dr. James Williams",
-        image: "/api/placeholder/40/40"
-      },
-      date: "April 11, 2025",
-      readTime: "6 min read",
-      image: "/api/placeholder/600/400"
-    },
-    {
-      id: 9,
-      title: "The Future of Remote Collaboration",
-      excerpt: "New tools and practices that are making distributed teams more effective than ever.",
-      category: "Business",
-      author: {
-        name: "Zoe Johnson",
-        image: "/api/placeholder/40/40"
-      },
-      date: "April 10, 2025",
-      readTime: "8 min read",
-      image: "/api/placeholder/600/400"
-    }*/
-  ];
 
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10);
+  const [latestBlogs, setlatestBlogs] = useState<BlogPost[]>([]);
+  const getFeaturedBlogs = async () => {
+    try {
+      const { data } = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/v1/blog/list`, {
+        page: page,
+        limit: limit,
+        filterType: 'tags',
+        filterBy: 'latest',
+      });
+      setlatestBlogs(data.data);
+    } catch (error) {
+      console.log(error)
+    }
+  };
+  React.useEffect(() => {
+    getFeaturedBlogs();
+  }, []);
   // Function to split posts into rows of 3
   const getRowsOfPosts = (posts: BlogPost[], postsPerRow: number = 3) => {
     const rows: BlogPost[][] = [];
@@ -147,7 +47,7 @@ const LatestBlogs: React.FC = () => {
     return rows;
   };
 
-  const blogRows = getRowsOfPosts(latestPosts);
+  const blogRows = getRowsOfPosts(latestBlogs);
 
   return (
     <section className="py-16 bg-gray-50">
@@ -166,15 +66,15 @@ const LatestBlogs: React.FC = () => {
           {blogRows.map((row, rowIndex) => (
             <div key={`row-${rowIndex}`} className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {row.map((post) => (
-                <div 
-                  key={post.id} 
+                <div
+                  key={post._id}
                   className="bg-white rounded-lg overflow-hidden shadow-lg transition-transform duration-300 hover:shadow-xl hover:-translate-y-1"
                 >
                   {/* Featured Image */}
                   <div className="relative">
-                    <img 
-                      src={post.image} 
-                      alt={post.title} 
+                    <img
+                      src={post.image}
+                      alt={post.title}
                       className="w-full h-48 object-cover"
                     />
                     <div className="absolute top-4 left-4">
@@ -192,12 +92,12 @@ const LatestBlogs: React.FC = () => {
                     <p className="text-gray-600 mb-4 line-clamp-3">
                       {post.excerpt}
                     </p>
-                    
+
                     {/* Author and Meta Info */}
                     <div className="flex items-center pt-4 border-t border-gray-100">
-                      <img 
-                        src={post.author.image} 
-                        alt={post.author.name} 
+                      <img
+                        src={post.author.image}
+                        alt={post.author.name}
                         className="w-8 h-8 rounded-full mr-3"
                       />
                       <div className="flex-1">
@@ -213,8 +113,8 @@ const LatestBlogs: React.FC = () => {
 
                   {/* Read More Link */}
                   <div className="px-5 pb-5">
-                    <a 
-                      href="#" 
+                    <a
+                      href="#"
                       className="text-orange-500 font-medium text-sm flex items-center hover:text-indigo-800 transition-colors"
                     >
                       Read Article

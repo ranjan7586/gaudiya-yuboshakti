@@ -1,9 +1,11 @@
-import { useEffect, useState } from 'react';
-import { Calendar, Clock, Image, Users, Bookmark, User, FileText } from 'lucide-react';
-import AdminSidebar from '../../components/Admin/AdminSidebar';
-import BlogEditor from '../../components/common/BlogEditor';
+import React, { useEffect, useState } from 'react';
 import axiosAuth from '../../config/axios_auth';
+import BlogEditor from '../../components/common/BlogEditor';
+import { Calendar, Clock, Image, User } from 'lucide-react';
 import AdminHeader from '../../components/Admin/AdminHeader';
+import AdminSidebar from '../../components/Admin/AdminSidebar';
+import { useNavigate, useParams } from 'react-router-dom';
+import { toast } from 'react-toastify';
 type User = {
   _id: string;
   name: string;
@@ -11,8 +13,12 @@ type User = {
   // Add other fields if needed
 };
 
+interface CreateBlogProps {
+  is_update?: boolean
+}
 
-export default function NewsSubmissionForm() {
+const CreateBlog: React.FC<CreateBlogProps> = ({ is_update = false }: CreateBlogProps) => {
+  const [updateId, setUpdateId] = useState<string | undefined>(undefined);
   const [formData, setFormData] = useState<{
     title: string;
     description: string;
@@ -21,7 +27,7 @@ export default function NewsSubmissionForm() {
     author: string;
     date: string;
     readTime: string;
-    thumbnail_img: File | null;
+    thumbnail_img: File | null | string;
   }>({
     title: '',
     description: '',
@@ -32,6 +38,30 @@ export default function NewsSubmissionForm() {
     readTime: '',
     thumbnail_img: null
   });
+  const { id } = useParams<{ id: string }>();
+  useEffect(() => {
+    setUpdateId(id);
+    if (is_update) {
+      const fetchBlog = async () => {
+        try {
+          const { data } = await axiosAuth.get(`${import.meta.env.VITE_BACKEND_URL}/api/v1/blog/${id}`);
+          setFormData({
+            title: data.data.title,
+            description: data.data.description,
+            category: data.data.category,
+            tags: data.data.tags,
+            author: data.data.author,
+            date: data.data.date,
+            readTime: data.data.readTime,
+            thumbnail_img: data.data.thumbnail_img
+          });
+        } catch (error) {
+          console.log(error)
+        }
+      }
+      fetchBlog();
+    }
+  }, [])
 
   const currentUser = JSON.parse(localStorage.getItem('currentUser') ?? '{}');
 
@@ -50,7 +80,6 @@ export default function NewsSubmissionForm() {
   const fetchUsers = async () => {
     try {
       const { data } = await axiosAuth.post(`${import.meta.env.VITE_BACKEND_URL}/api/v1/auth/users`);
-      console.log(data)
       if (data) setUsers(data.data);
     } catch (error) {
       console.log(error)
@@ -74,43 +103,67 @@ export default function NewsSubmissionForm() {
         : prev.tags.filter(tag => tag !== value) // remove tag
     }));
   };
-
+  const navigate = useNavigate();
   const handleSubmit = async (e: any) => {
     e.preventDefault();
     setIsSubmitting(true);
     try {
-      const form = new FormData();
-      form.append('title', formData.title);
-      form.append('description', formData.description);
-      form.append('category', formData.category);
-      formData.tags.forEach(tag => {
-        form.append("tags", tag);
-      });
-      form.append('author', formData.author);
-      form.append('date', formData.date);
-      form.append('readTime', formData.readTime);
+      if (is_update) {
+        console.log(formData);
+        const { data } = await axiosAuth.patch(`${import.meta.env.VITE_BACKEND_URL}/api/v1/blog/update/${updateId}`, formData, {
+          headers: {
+            "Content-Type": 'multipart/form-data'
+          }
+        });
+        setIsSubmitting(false);
+        setIsSuccess(true);
+        toast.success(data.data.message);
+        setFormData({
+          title: '',
+          description: '',
+          category: '',
+          tags: [] as string[],
+          author: '',
+          date: '',
+          readTime: '',
+          thumbnail_img: null
+        });
+        navigate('/admin/dashboard');
+        return;
+      } else {
+        const form = new FormData();
+        form.append('title', formData.title);
+        form.append('description', formData.description);
+        form.append('category', formData.category);
+        formData.tags.forEach(tag => {
+          form.append("tags", tag);
+        });
+        form.append('author', formData.author);
+        form.append('date', formData.date);
+        form.append('readTime', formData.readTime);
 
-      if (formData.thumbnail_img) {
-        form.append('thumbnail_img', formData.thumbnail_img); // ✅ File goes here
-      }
-      const { data } = await axiosAuth.post(`${import.meta.env.VITE_BACKEND_URL}/api/v1/blog/create`, form, {
-        headers: {
-          "Content-Type": 'multipart/form-data'
+        if (formData.thumbnail_img) {
+          form.append('thumbnail_img', formData.thumbnail_img); // ✅ File goes here
         }
-      });
-      console.log(data);
-      setIsSubmitting(false);
-      setIsSuccess(true);
-      setFormData({
-        title: '',
-        description: '',
-        category: '',
-        tags: [] as string[],
-        author: '',
-        date: '',
-        readTime: '',
-        thumbnail_img: null
-      });
+        const { data } = await axiosAuth.post(`${import.meta.env.VITE_BACKEND_URL}/api/v1/blog/create`, form, {
+          headers: {
+            "Content-Type": 'multipart/form-data'
+          }
+        });
+        console.log(data);
+        setIsSubmitting(false);
+        setIsSuccess(true);
+        setFormData({
+          title: '',
+          description: '',
+          category: '',
+          tags: [] as string[],
+          author: '',
+          date: '',
+          readTime: '',
+          thumbnail_img: null
+        });
+      }
     } catch (error) {
       console.log(error);
     }
@@ -234,7 +287,7 @@ export default function NewsSubmissionForm() {
                         className={`px-6 py-2 rounded-md text-white font-medium ${isSubmitting ? 'bg-blue-400' : 'bg-blue-600 hover:bg-blue-700'
                           } focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all`}
                       >
-                        {isSubmitting ? 'Publishing...' : 'Publish Article'}
+                        {isSubmitting ? is_update ? 'Updating...' : 'Publishing...' : is_update ? 'Update Article' : 'Publish Article'}
                       </button>
                       <button
                         type="button"
@@ -394,7 +447,9 @@ export default function NewsSubmissionForm() {
                       <div className="space-y-3">
                         <div className="w-full border border-gray-300 rounded-md overflow-hidden bg-gray-50">
                           <img
-                            src="/api/placeholder/320/320"
+                            src={typeof formData.thumbnail_img === 'string' ?
+                              formData.thumbnail_img :
+                              URL.createObjectURL(formData.thumbnail_img)}
                             alt="Thumbnail preview"
                             className="w-full h-48 object-cover"
                           />
@@ -403,13 +458,14 @@ export default function NewsSubmissionForm() {
                           <button
                             type="button"
                             className="text-sm text-red-600 hover:text-red-800 font-medium"
-                          // onClick={() => setFormData(prev => ({ ...prev, thumbnail_img: '' }))}
+                            onClick={() => setFormData(prev => ({ ...prev, thumbnail_img: null }))}
                           >
                             Remove featured image
                           </button>
                           <button
                             type="button"
                             className="text-sm text-blue-600 hover:text-blue-800 font-medium"
+                            onClick={() => setFormData(prev => ({ ...prev, thumbnail_img: null }))}
                           >
                             Replace image
                           </button>
@@ -426,3 +482,5 @@ export default function NewsSubmissionForm() {
     </div>
   );
 }
+
+export default CreateBlog

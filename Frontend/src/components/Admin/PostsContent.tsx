@@ -2,8 +2,10 @@ import React, { useEffect } from 'react'
 import { NavLink } from 'react-router-dom';
 import axiosAuth from '../../config/axios_auth';
 import { Plus, ArrowLeft, ArrowRight } from 'lucide-react';
+import { setUsers } from '../../contexts/UserContext';
 
-type Props = {}
+
+// type Props = {}
 interface Post {
     _id: number;
     title: string;
@@ -13,9 +15,9 @@ interface Post {
     date: string;
 }
 
-const PostsContent = (props: Props) => {
+const PostsContent = () => {
     const [posts, setPosts] = React.useState<Post[]>([]);
-    const [author, setAuthor] = React.useState<any>([]);
+    const { users } = setUsers();
 
     const fetchPosts = async () => {
         try {
@@ -29,18 +31,18 @@ const PostsContent = (props: Props) => {
             console.log(error)
         }
     }
-    const fetchUsers = async () => {
-        try {
-            const { data } = await axiosAuth.post(`${import.meta.env.VITE_BACKEND_URL}/api/v1/auth/users`);
-            if (data?.data) setAuthor(data.data);
-            console.log(data)
-        } catch (error) {
-            console.log(error)
-        }
-    }
+    // const fetchUsers = async () => {
+    //     try {
+    //         const { data } = await axiosAuth.post(`${import.meta.env.VITE_BACKEND_URL}/api/v1/auth/users`);
+    //         if (data?.data) setAuthor(data.data);
+    //         console.log(data)
+    //     } catch (error) {
+    //         console.log(error)
+    //     }
+    // }
     useEffect(() => {
         fetchPosts();
-        fetchUsers();
+        // fetchUsers();
     }, [])
     return (
         <div>
@@ -72,13 +74,13 @@ const PostsContent = (props: Props) => {
                             <div className="flex-1">
                                 <div className="font-medium">{post.title}</div>
                                 <div className="flex space-x-3 mt-1">
-                                    <button className="text-blue-600 text-sm hover:underline">Edit</button>
+                                    <NavLink to={`/admin/posts/update-post/${post._id}`} className="text-blue-600 text-sm hover:underline">Edit</NavLink>
                                     <button className="text-red-600 text-sm hover:underline">Delete</button>
                                     <button className="text-gray-600 text-sm hover:underline">View</button>
                                 </div>
                             </div>
                         </div>
-                        <div className="col-span-2">{author.find((author: any) => author._id === post.author)?.name}</div>
+                        <div className="col-span-2">{users && users.find((author: any) => author._id === post.author)?.name}</div>
                         <div className="col-span-2">{post.category}</div>
                         <div className="col-span-1">
                             <span className={`px-2 py-1 rounded-full text-xs ${post.status === 'Published' ? 'bg-green-100 text-green-800' :
