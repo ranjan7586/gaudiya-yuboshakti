@@ -1,23 +1,6 @@
 import axios from 'axios';
-import { use, useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
-// const blogs: { thumbnail_img: string; title: string; description: string }[] = [
-//   {
-//     thumbnail_img: 'https://images.pexels.com/photos/158063/bellingrath-gardens-alabama-landscape-scenic-158063.jpeg',
-//     title: 'The Rise of Entrepreneurship',
-//     description: 'Exploring business trends in 2025 and beyond.',
-//   },
-//   {
-//     thumbnail_img: 'https://images.pexels.com/photos/906150/pexels-photo-906150.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
-//     title: 'Healthy Eating Habits',
-//     description: 'How food culture is reshaping our health.',
-//   },
-//   {
-//     thumbnail_img: 'https://images.pexels.com/photos/1108572/pexels-photo-1108572.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
-//     title: 'Global Economy in Crisis?',
-//     description: 'A deep dive into recent economic shifts.',
-//   },
-// ];
 interface Blog {
   thumbnail_img: string;
   title: string;
@@ -25,19 +8,19 @@ interface Blog {
 }
 
 const HeroCarousel = () => {
-  const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(10);
+  // const [page, setPage] = useState(1);
+  // const [limit, setLimit] = useState(10);
   const [blogs, setBlogs] = useState<Blog[]>([]);
   const carouselRef = useRef<HTMLDivElement>(null);
-  const [heroBlogs, setHeroBlogs] = useState<any>([]);
+  // const [heroBlogs, setHeroBlogs] = useState<any>([]);
   const [isSliding, setIsSliding] = useState<boolean>(false);
   const [currentIndex, setCurrentIndex] = useState<number>(0);
 
   const getHeroBlogs = async () => {
     try {
       const { data } = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/v1/blog/list`, {
-        page: page,
-        limit: limit,
+        page: 1,
+        limit: 6,
         filterType: 'tags',
         filterBy: 'trending',
       });

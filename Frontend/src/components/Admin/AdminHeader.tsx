@@ -1,6 +1,4 @@
 import { ChevronDown, Search } from 'lucide-react'
-import React from 'react'
-
 type Props = {
     currentUser: any;
     darkMode: boolean;

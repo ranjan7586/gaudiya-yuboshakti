@@ -1,10 +1,9 @@
-import React from 'react'
-import { Search, Menu, X, Plus, Settings, Home, Users, Tag, Grid, FileText, ChevronDown, LogOut, Moon, ArrowLeft, ArrowRight } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import { setUsers } from '../../contexts/UserContext';
 
-type Props = {}
+// type Props = {}
 
-const UsersContent = (props: Props) => {
+const UsersContent = () => {
     const { users } = setUsers();
     return (
         <div>

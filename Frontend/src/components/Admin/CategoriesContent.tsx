@@ -1,8 +1,7 @@
-import React from 'react'
-import { Search, Menu, X, Plus, Settings, Home, Users, Tag, Grid, FileText, ChevronDown, LogOut, Moon, ArrowLeft, ArrowRight } from 'lucide-react';
-type Props = {}
+import { Plus } from 'lucide-react';
+// type Props = {}
 
-const CategoriesContent = (props: Props) => {
+const CategoriesContent = () => {
     const categories = [
         { id: 1, name: 'Development', count: 15, slug: 'development', description: 'Programming tutorials and guides' },
         { id: 2, name: 'Design', count: 8, slug: 'design', description: 'UI/UX and graphic design content' },

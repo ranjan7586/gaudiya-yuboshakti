@@ -19,14 +19,14 @@ interface BlogPost {
 
 const LatestBlogs: React.FC = () => {
 
-  const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(10);
+  // const [page, setPage] = useState(1);
+  // const [limit, setLimit] = useState(10);
   const [latestBlogs, setlatestBlogs] = useState<BlogPost[]>([]);
   const getFeaturedBlogs = async () => {
     try {
       const { data } = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/v1/blog/list`, {
-        page: page,
-        limit: limit,
+        page: 1,
+        limit: 9,
         filterType: 'tags',
         filterBy: 'latest',
       });

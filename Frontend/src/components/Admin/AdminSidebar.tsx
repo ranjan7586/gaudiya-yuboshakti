@@ -1,6 +1,6 @@
 import React from 'react'
 import SidebarItem from './SidebarItem';
-import { Search, Menu, X, Plus, Settings, Home, Users, Tag, Grid, FileText, ChevronDown, LogOut, Moon, ArrowLeft, ArrowRight } from 'lucide-react';
+import { Menu, X, Settings, Home, Users, Tag, Grid, FileText, LogOut, Moon } from 'lucide-react';
 
 type Props = {
     darkMode: boolean;
@@ -12,7 +12,7 @@ type Props = {
     setSidebarOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const AdminSidebar = ({ sidebarOpen, setSidebarOpen, currentPage, setCurrentPage, darkMode, setDarkMode, toggleSidebar }: Props) => {
+const AdminSidebar = ({ sidebarOpen, currentPage, setCurrentPage, darkMode, setDarkMode, toggleSidebar }: Props) => {
     return (
         <div>
             <aside className={`${sidebarOpen ? 'w-64' : 'w-16'} transition-all duration-300 ${darkMode ? 'bg-black' : 'bg-gray-100'} h-full flex flex-col`}>

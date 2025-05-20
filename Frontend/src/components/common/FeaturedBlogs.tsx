@@ -12,14 +12,14 @@ interface FeaturedBlogsProps {
     thumbnail_img: string;
 }
 const FeaturedBlogs = () => {
-    const [page, setPage] = useState(1);
-    const [limit, setLimit] = useState(10);
+    // const [page, setPage] = useState(1);
+    // const [limit, setLimit] = useState(10);
     const [featuredPosts, setFeaturedPosts] = useState<FeaturedBlogsProps[]>([]);
     const getFeaturedBlogs = async () => {
         try {
             const { data } = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/v1/blog/list`, {
-                page: page,
-                limit: limit,
+                page: 1,
+                limit: 4,
                 filterType: 'tags',
                 filterBy: 'featured',
             });
