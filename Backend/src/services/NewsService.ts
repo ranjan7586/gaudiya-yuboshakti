@@ -11,7 +11,6 @@ class NewsService {
      * @returns {Promise<News>} - The newly created news item
      */
     async createNews(data: any) {
-        console.log(data)
         if (data?.file) {
             const result = await uploadToCloudinary(data.file);
             data.body.thumbnail_img = result.url;
@@ -25,7 +24,6 @@ class NewsService {
     async getNews(page: number, display_per_page: number, sort_by: string, sort_order: any, filter_by: string, filter_type: string) {
         sort_order = sort_order === 'asc' ? 1 : -1;
         if (filter_type && filter_by) {
-            console.log(filter_type, filter_by)
             const result = await News.find({ [filter_type]: filter_by }).sort({ [sort_by]: sort_order }).skip((page - 1) * display_per_page).limit(display_per_page);
             return result;
         }

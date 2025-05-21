@@ -8,6 +8,8 @@ import BlogListing from '../components/common/BlogListing'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import AdminLogin from '../pages/Admin/AdminLogin'
 import { UserProvider } from '../contexts/UserContext'
+import HeaderTest from '../components/user/HeaderTest'
+import ContactUs from '../components/user/ContactUs'
 
 
 const Router = () => {
@@ -15,6 +17,8 @@ const Router = () => {
     <BrowserRouter>
       <Routes>
         <Route path='/' element={<Home />} />
+        <Route path='/headertest' element={<HeaderTest />} />
+        <Route path='/contact-us' element={<ContactUs />} />
         <Route path='/list/:type' element={<BlogListing />} />
         <Route path='/blog/details/:blog-id' element={<BlogDetails />} />
         <Route path="/admin/login" element={<AdminLogin />} />

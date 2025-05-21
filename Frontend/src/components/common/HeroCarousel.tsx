@@ -8,11 +8,8 @@ interface Blog {
 }
 
 const HeroCarousel = () => {
-  // const [page, setPage] = useState(1);
-  // const [limit, setLimit] = useState(10);
   const [blogs, setBlogs] = useState<Blog[]>([]);
   const carouselRef = useRef<HTMLDivElement>(null);
-  // const [heroBlogs, setHeroBlogs] = useState<any>([]);
   const [isSliding, setIsSliding] = useState<boolean>(false);
   const [currentIndex, setCurrentIndex] = useState<number>(0);
 

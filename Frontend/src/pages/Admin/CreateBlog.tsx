@@ -1,16 +1,15 @@
-import React, { useEffect, useState } from 'react';
+import { toast } from 'react-toastify';
 import axiosAuth from '../../config/axios_auth';
+import React, { useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import BlogEditor from '../../components/common/BlogEditor';
 import { Calendar, Clock, Image, User } from 'lucide-react';
 import AdminHeader from '../../components/Admin/AdminHeader';
 import AdminSidebar from '../../components/Admin/AdminSidebar';
-import { useNavigate, useParams } from 'react-router-dom';
-import { toast } from 'react-toastify';
 type User = {
   _id: string;
   name: string;
   email: string;
-  // Add other fields if needed
 };
 
 interface CreateBlogProps {
@@ -66,12 +65,12 @@ const CreateBlog: React.FC<CreateBlogProps> = ({ is_update = false }: CreateBlog
   const currentUser = JSON.parse(localStorage.getItem('currentUser') ?? '{}');
 
 
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [darkMode, setDarkMode] = useState(true);
+  const [users, setUsers] = useState<User[]>([]);
   const [isSuccess, setIsSuccess] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [currentPage, setCurrentPage] = useState('posts');
-  const [darkMode, setDarkMode] = useState(true);
-  const [users, setUsers] = useState<User[]>([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
