@@ -1,6 +1,7 @@
 import React from 'react'
 import SidebarItem from './SidebarItem';
 import { Menu, X, Settings, Home, Users, Tag, Grid, FileText, LogOut, Moon } from 'lucide-react';
+import { NavLink } from 'react-router-dom';
 
 type Props = {
     darkMode: boolean;
@@ -24,6 +25,7 @@ const AdminSidebar = ({ sidebarOpen, currentPage, setCurrentPage, darkMode, setD
                 </div>
 
                 <nav className="flex-1 mt-6">
+                    <NavLink to={'/admin/dashboard'}>
                     <SidebarItem
                         icon={<Home size={20} />}
                         label="Dashboard"
@@ -31,7 +33,8 @@ const AdminSidebar = ({ sidebarOpen, currentPage, setCurrentPage, darkMode, setD
                         onClick={() => setCurrentPage('dashboard')}
                         isActive={currentPage === 'dashboard'}
                         darkMode={darkMode}
-                    />
+                    /></NavLink>
+                    <NavLink to={'/admin/posts'}>
                     <SidebarItem
                         icon={<FileText size={20} />}
                         label="Posts"
@@ -40,6 +43,8 @@ const AdminSidebar = ({ sidebarOpen, currentPage, setCurrentPage, darkMode, setD
                         isActive={currentPage === 'posts'}
                         darkMode={darkMode}
                     />
+                    </NavLink>
+                    <NavLink to={'/admin/categories'}>
                     <SidebarItem
                         icon={<Tag size={20} />}
                         label="Categories"
@@ -48,6 +53,8 @@ const AdminSidebar = ({ sidebarOpen, currentPage, setCurrentPage, darkMode, setD
                         isActive={currentPage === 'categories'}
                         darkMode={darkMode}
                     />
+                    </NavLink>
+                    <NavLink to={'/admin/types'}>
                     <SidebarItem
                         icon={<Grid size={20} />}
                         label="Post Types"
@@ -56,6 +63,8 @@ const AdminSidebar = ({ sidebarOpen, currentPage, setCurrentPage, darkMode, setD
                         isActive={currentPage === 'types'}
                         darkMode={darkMode}
                     />
+                    </NavLink>
+                    <NavLink to={'/admin/users'}>
                     <SidebarItem
                         icon={<Users size={20} />}
                         label="Users"
@@ -64,6 +73,7 @@ const AdminSidebar = ({ sidebarOpen, currentPage, setCurrentPage, darkMode, setD
                         isActive={currentPage === 'users'}
                         darkMode={darkMode}
                     />
+                    </NavLink>
                     <SidebarItem
                         icon={<Settings size={20} />}
                         label="Settings"

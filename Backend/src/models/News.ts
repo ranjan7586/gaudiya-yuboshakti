@@ -2,8 +2,8 @@ import mongoose from "mongoose";
 interface INews extends mongoose.Document {
     title: string;
     description: string;
-    category: string;
     author: mongoose.Schema.Types.ObjectId;
+    category: mongoose.Schema.Types.ObjectId;
     date: string;
     tags: string[];
     readTime: string;
@@ -21,7 +21,8 @@ const newsSchema: mongoose.Schema = new mongoose.Schema<INews>({
         required: true
     },
     category: {
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Category",
         required: true
     },
     tags: {
