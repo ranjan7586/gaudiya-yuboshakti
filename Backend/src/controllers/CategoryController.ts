@@ -23,7 +23,7 @@ class CategoryController {
             if (missing_fields.length > 0) {
                 return res.status(400).json({ message: `Missing required fields: ${missing_fields.join(', ')}` });
             }
-            const result = await CategoryService.createCategory(req);
+            const result = await CategoryService.createCategory(req.body);
             return res.status(200).json({ message: 'Category created successfully', data: result });
 
         } catch (error) {

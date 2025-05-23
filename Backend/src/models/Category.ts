@@ -16,7 +16,7 @@ const categorySchema: mongoose.Schema = new mongoose.Schema<ICategory>({
     },
     description: {
         type: String,
-        required: true
+        required: false
     },
     deletedAt: {
         type: Date,
