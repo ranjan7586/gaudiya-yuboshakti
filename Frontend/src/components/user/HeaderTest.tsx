@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Menu, X, ChevronDown } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 
 export default function HeaderTest() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);

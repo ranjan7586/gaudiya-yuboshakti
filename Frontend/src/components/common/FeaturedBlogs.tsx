@@ -5,7 +5,7 @@ interface FeaturedBlogsProps {
     _id: number;
     title: string;
     excerpt: string;
-    category: string;
+    category: any;
     author: any;
     date: string;
     readTime: string;
@@ -40,7 +40,7 @@ const FeaturedBlogs = () => {
                         <h2 className="text-3xl font-bold text-gray-800 mb-2">Featured Articles</h2>
                         <div className="w-16 h-1 bg-orange-500"></div>
                     </div>
-                    <NavLink to={"/list/featured"} className="text-indigo-600 font-medium flex items-center hover:text-indigo-800 transition-colors">
+                    <NavLink to={"/list/tags/featured"} className="text-indigo-600 font-medium flex items-center hover:text-indigo-800 transition-colors">
                         View All
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7-7 7" />
@@ -63,7 +63,7 @@ const FeaturedBlogs = () => {
                                         />
                                         <div className="absolute top-4 left-4">
                                             <span className="px-3 py-1 bg-orange-500 text-white text-xs font-semibold rounded-full">
-                                                {post.category}
+                                                {post?.category?.name}
                                             </span>
                                         </div>
                                     </div>
@@ -85,7 +85,8 @@ const FeaturedBlogs = () => {
                                                 className="w-8 h-8 rounded-full mr-3"
                                             /> */}
                                             <div>
-                                                <p className="text-sm font-medium text-gray-800">{post.author}</p>
+                                                {/* <img src="" alt="" /> */}
+                                                <p className="text-sm font-medium text-gray-800">{post.author?.name}</p>
                                                 <p className="text-xs text-gray-500">{post.date} • {post.readTime}</p>
                                             </div>
                                         </div>
@@ -114,11 +115,11 @@ const FeaturedBlogs = () => {
                 </div>
 
                 {/* Scroll Indicator Dots */}
-                <div className="flex justify-center space-x-2 mt-6">
+                {/* <div className="flex justify-center space-x-2 mt-6">
                     <span className="w-2 h-2 bg-orange-500 rounded-full"></span>
                     <span className="w-2 h-2 bg-gray-300 rounded-full"></span>
                     <span className="w-2 h-2 bg-gray-300 rounded-full"></span>
-                </div>
+                </div> */}
             </div>
 
             {/* Custom style to hide scrollbar while keeping functionality */}

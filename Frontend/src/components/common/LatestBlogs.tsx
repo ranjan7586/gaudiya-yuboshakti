@@ -1,20 +1,21 @@
 import axios from 'axios';
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 
 interface Author {
   name: string;
-  image: string;
+  profileImage: string;
 }
 
 interface BlogPost {
   _id: number;
   title: string;
   excerpt: string;
-  category: string;
+  category: any;
   author: Author;
   date: string;
   readTime: string;
-  image: string;
+  thumbnail_img: string;
 }
 
 const LatestBlogs: React.FC = () => {
@@ -70,16 +71,16 @@ const LatestBlogs: React.FC = () => {
                   key={post._id}
                   className="bg-white rounded-lg overflow-hidden shadow-lg transition-transform duration-300 hover:shadow-xl hover:-translate-y-1"
                 >
-                  {/* Featured Image */}
+                  {/* Featured profileImage */}
                   <div className="relative">
                     <img
-                      src={post.image}
+                      src={post.thumbnail_img}
                       alt={post.title}
                       className="w-full h-48 object-cover"
                     />
                     <div className="absolute top-4 left-4">
                       <span className="px-3 py-1 bg-orange-500 text-white text-xs font-semibold rounded-full">
-                        {post.category}
+                        {post.category?.name}
                       </span>
                     </div>
                   </div>
@@ -96,8 +97,8 @@ const LatestBlogs: React.FC = () => {
                     {/* Author and Meta Info */}
                     <div className="flex items-center pt-4 border-t border-gray-100">
                       <img
-                        src={post.author.image}
-                        alt={post.author.name}
+                        src={post.author.profileImage}
+                        alt={post.author?.name}
                         className="w-8 h-8 rounded-full mr-3"
                       />
                       <div className="flex-1">
@@ -113,15 +114,15 @@ const LatestBlogs: React.FC = () => {
 
                   {/* Read More Link */}
                   <div className="px-5 pb-5">
-                    <a
-                      href="#"
+                    <Link
+                      to={`/blog/details/${post._id}`}
                       className="text-orange-500 font-medium text-sm flex items-center hover:text-indigo-800 transition-colors"
                     >
                       Read Article
                       <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                       </svg>
-                    </a>
+                    </Link>
                   </div>
                 </div>
               ))}
@@ -131,9 +132,11 @@ const LatestBlogs: React.FC = () => {
 
         {/* View All Button */}
         <div className="text-center mt-12">
-          <button className="px-8 py-3 bg-orange-500 text-white font-medium rounded-md hover:bg-indigo-700 transition-colors shadow-md hover:shadow-lg">
-            View All Articles
-          </button>
+          <Link to={`/list/tags/latest`}>
+            <button className="px-8 py-3 bg-orange-500 text-white font-medium rounded-md hover:bg-indigo-700 transition-colors shadow-md hover:shadow-lg">
+              View All Articles
+            </button>
+          </Link>
         </div>
       </div>
     </section>

@@ -29,6 +29,13 @@ class AuthService {
         return { user, token };
     }
 
+    async logout(req: any) {
+        const user = await User.findOne({ _id: req.body.auth_user._id });
+        if (!user) throw new Error('User not found');
+        const token = this.generateJWT(user._id);
+        return { user, token };
+    }
+
     generateJWT(id: any) {
         const token = jwt.sign({ id }, process.env.JWT_SECRET || '', { expiresIn: '1d' });
         return token;

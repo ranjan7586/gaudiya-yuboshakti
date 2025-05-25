@@ -12,16 +12,18 @@ import AdminDashboard from '../pages/Admin/AdminDashboard'
 import PostsContent from '../components/Admin/PostsContent'
 import CategoriesContent from '../components/Admin/CategoriesContent'
 import UsersContent from '../components/Admin/UsersContent'
+import ScrollToTop from '../contexts/ScrollToTop'
 
 
 const Router = () => {
   return (
     <BrowserRouter>
+    <ScrollToTop />
       <Routes>
         <Route path='/' element={<Home />} />
         <Route path='/headertest' element={<HeaderTest />} />
         <Route path='/contact-us' element={<ContactUs />} />
-        <Route path='/list/:type' element={<BlogListing />} />
+        <Route path='/list/:filter_type/:type' element={<BlogListing />} />
         <Route path='/blog/details/:blog-id' element={<BlogDetails />} />
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route path='/admin' element={

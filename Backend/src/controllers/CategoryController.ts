@@ -18,7 +18,7 @@ class CategoryController {
     async create(req: Request, res: Response) {
         try {
             if (!req.body) return res.status(400).json({ message: 'No data provided' });
-            const require_arr = ['name'];
+            const require_arr = ['name', 'slug'];
             const missing_fields = require_arr.filter((field) => req.body[field] === undefined || !req.body[field]);
             if (missing_fields.length > 0) {
                 return res.status(400).json({ message: `Missing required fields: ${missing_fields.join(', ')}` });
@@ -43,7 +43,7 @@ class CategoryController {
     async update(req: Request, res: Response) {
         try {
             if (!req.body) return res.status(400).json({ message: 'No data provided' });
-            const require_arr = ['name'];
+            const require_arr = ['name', 'slug'];
             const missing_fields = require_arr.filter((field) => req.body[field] === undefined || !req.body[field]);
             if (missing_fields.length > 0) {
                 return res.status(400).json({ message: `Missing required fields: ${missing_fields.join(', ')}` });

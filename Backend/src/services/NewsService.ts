@@ -1,3 +1,4 @@
+import Category from "../models/Category";
 import News from "../models/News";
 import { uploadToCloudinary } from "../utils/cloudinary";
 
@@ -21,13 +22,14 @@ class NewsService {
         return result;
     }
 
-    async getNews(page: number, display_per_page: number, sort_by: string, sort_order: any, filter_by: string, filter_type: string) {
+    async getNews(page: number, display_per_page: number, sort_by: string, sort_order: any, filter_by: any, filter_type: string) {
         sort_order = sort_order === 'asc' ? 1 : -1;
         if (filter_type && filter_by) {
-            const result = await News.find({ [filter_type]: filter_by }).sort({ [sort_by]: sort_order }).skip((page - 1) * display_per_page).limit(display_per_page);
+            if(filter_type === 'category') filter_by = (await Category.findOne({ name: filter_by }).select('_id'))?._id ; 
+            const result = await News.find({ [filter_type]: filter_by, deletedAt: null }).populate('author', ['name', 'profileImage']).populate('category', 'name').sort({ [sort_by]: sort_order }).skip((page - 1) * display_per_page).limit(display_per_page);
             return result;
         }
-        const result = await News.find().sort({ [sort_by]: sort_order }).skip((page - 1) * display_per_page).limit(display_per_page);
+        const result = await News.find({ deletedAt: null }).populate('author', ['name', 'profileImage']).populate('category', 'name').sort({ [sort_by]: sort_order }).skip((page - 1) * display_per_page).limit(display_per_page);
         return result;
     }
 
@@ -47,7 +49,7 @@ class NewsService {
     }
 
     async getNewsById(id: string) {
-        const result = await News.findOne({ _id: id });
+        const result = await News.findOne({ _id: id }).populate('author', ['name', 'profileImage']).populate('category', 'name');
         return result;
     }
 }

@@ -4,14 +4,17 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import BlogEditor from '../../components/common/BlogEditor';
 import { Calendar, Clock, Image, User } from 'lucide-react';
-import AdminHeader from '../../components/Admin/AdminHeader';
-import AdminSidebar from '../../components/Admin/AdminSidebar';
 type User = {
   _id: string;
   name: string;
   email: string;
 };
-
+type Category = {
+  _id: string;
+  name: string;
+  slug: string;
+  description: string;
+}
 interface CreateBlogProps {
   is_update?: boolean
 }
@@ -21,9 +24,9 @@ const CreateBlog: React.FC<CreateBlogProps> = ({ is_update = false }: CreateBlog
   const [formData, setFormData] = useState<{
     title: string;
     description: string;
-    category: string;
+    category: any;
     tags: string[];
-    author: string;
+    author: any;
     date: string;
     readTime: string;
     thumbnail_img: File | null | string;
@@ -47,9 +50,9 @@ const CreateBlog: React.FC<CreateBlogProps> = ({ is_update = false }: CreateBlog
           setFormData({
             title: data.data.title,
             description: data.data.description,
-            category: data.data.category,
+            category: data.data.category?._id,
             tags: data.data.tags,
-            author: data.data.author,
+            author: data.data.author?._id,
             date: data.data.date,
             readTime: data.data.readTime,
             thumbnail_img: data.data.thumbnail_img
@@ -62,19 +65,20 @@ const CreateBlog: React.FC<CreateBlogProps> = ({ is_update = false }: CreateBlog
     }
   }, [])
 
-  const currentUser = JSON.parse(localStorage.getItem('currentUser') ?? '{}');
+  // const currentUser = JSON.parse(localStorage.getItem('currentUser') ?? '{}');
 
 
-  const [darkMode, setDarkMode] = useState(true);
+  // const [darkMode, setDarkMode] = useState(true);
   const [users, setUsers] = useState<User[]>([]);
-  const [isSuccess, setIsSuccess] = useState(false);
-  const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [currentPage, setCurrentPage] = useState('posts');
+  const [categories, setCategories] = useState<Category[]>([]);
+  // const [isSuccess, setIsSuccess] = useState(false);
+  // const [sidebarOpen, setSidebarOpen] = useState(true);
+  // const [currentPage, setCurrentPage] = useState('posts');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const toggleSidebar = () => {
-    setSidebarOpen(!sidebarOpen);
-  };
+  // const toggleSidebar = () => {
+  //   setSidebarOpen(!sidebarOpen);
+  // };
 
   const fetchUsers = async () => {
     try {
@@ -87,7 +91,9 @@ const CreateBlog: React.FC<CreateBlogProps> = ({ is_update = false }: CreateBlog
 
   const handleChange = (e: any) => {
     const { name, value } = e.target;
+    console.log(name,value)
     setFormData(prev => ({ ...prev, [name]: value }));
+    console.log(formData)
   };
 
   const handleEditorChange = (value: any) => {
@@ -115,7 +121,7 @@ const CreateBlog: React.FC<CreateBlogProps> = ({ is_update = false }: CreateBlog
           }
         });
         setIsSubmitting(false);
-        setIsSuccess(true);
+        // setIsSuccess(true);
         toast.success(data.data.message);
         setFormData({
           title: '',
@@ -127,7 +133,7 @@ const CreateBlog: React.FC<CreateBlogProps> = ({ is_update = false }: CreateBlog
           readTime: '',
           thumbnail_img: null
         });
-        navigate('/admin/dashboard');
+        navigate('/admin/posts');
         return;
       } else {
         const form = new FormData();
@@ -150,8 +156,9 @@ const CreateBlog: React.FC<CreateBlogProps> = ({ is_update = false }: CreateBlog
           }
         });
         console.log(data);
+        toast.success(data.message);
         setIsSubmitting(false);
-        setIsSuccess(true);
+        // setIsSuccess(true);
         setFormData({
           title: '',
           description: '',
@@ -166,11 +173,21 @@ const CreateBlog: React.FC<CreateBlogProps> = ({ is_update = false }: CreateBlog
     } catch (error) {
       console.log(error);
     }
-
   };
+
+  const fetchCategories = async () => {
+    try {
+      const { data } = await axiosAuth.post(`${import.meta.env.VITE_BACKEND_URL}/api/v1/categories/list`);
+      console.log(data)
+      if (data.data) setCategories(data?.data);
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
   useEffect(() => {
     fetchUsers();
+    fetchCategories();
   }, []);
 
   return (
@@ -197,11 +214,11 @@ const CreateBlog: React.FC<CreateBlogProps> = ({ is_update = false }: CreateBlog
 
       <div className="flex">
         {/* Main Content - WordPress-like Layout */}
-        {isSuccess && (
+        {/* {isSuccess && (
           <div className="mb-6 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
             <p>Article published successfully!</p>
           </div>
-        )}
+        )} */}
         <div className="form_content p-6">
 
           <div className="flex justify-between items-center mb-6">
@@ -294,19 +311,19 @@ const CreateBlog: React.FC<CreateBlogProps> = ({ is_update = false }: CreateBlog
                   <select
                     id="category"
                     name="category"
-                    value={formData.category}
+                    value={formData.category || ''}
                     onChange={handleChange}
                     className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     required
                   >
                     <option value="">Select a category</option>
-                    <option value="technology">Technology</option>
-                    <option value="business">Business</option>
-                    <option value="politics">Politics</option>
-                    <option value="health">Health</option>
-                    <option value="science">Science</option>
-                    <option value="entertainment">Entertainment</option>
+                    {categories.map((category) => (
+                      <option key={category._id} value={category._id}>
+                        {category.name}
+                      </option>
+                    ))}
                   </select>
+
                 </div>
               </div>
 
@@ -345,7 +362,7 @@ const CreateBlog: React.FC<CreateBlogProps> = ({ is_update = false }: CreateBlog
                     <select
                       id="author"
                       name="author"
-                      value={formData.author}
+                      value={formData.author || ''}
                       onChange={handleChange}
                       className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                       required

@@ -1,7 +1,9 @@
 import axios from 'axios';
 import { useEffect, useRef, useState } from 'react'
+import { NavLink } from 'react-router-dom';
 
 interface Blog {
+  _id: string;
   thumbnail_img: string;
   title: string;
   description: string;
@@ -102,7 +104,7 @@ const HeroCarousel = () => {
   }, []);
 
   return (
-    <div className="relative h-auto w-4/5 mx-auto mt-10 shadow-lg rounded-lg overflow-hidden">
+    <div className="relative h-auto container mx-auto mt-10 shadow-lg rounded-lg overflow-hidden">
       <div className="relative w-full h-96 sm:h-150 overflow-hidden">
         {extendedBlogs && extendedBlogs.length > 0 && (
           <div
@@ -116,18 +118,20 @@ const HeroCarousel = () => {
           >
             {extendedBlogs && extendedBlogs.map((blog, index) => (
               <div key={index} className="flex-shrink-0" style={{ width: `${100 / extendedBlogs.length}%` }}>
-                <div className="relative w-full h-full">
-                  <img
-                    src={blog.thumbnail_img}
-                    alt={blog.title}
-                    className="w-4/5 h-full object-cover"
-                  />
-                  <div className="absolute bottom-1/2 left-3/5 right-0 bg-gray-500 bg-opacity-90 p-4">
-                    <h2 className="text-xl font-bold text-orange-600">{blog.title}</h2>
-                    {/* <p className="text-gray-600">{blog.description}</p> */}
-                    <div dangerouslySetInnerHTML={{ __html: blog.description.substring(0, 50) }} />
+                <NavLink to={`/blog/details/${blog._id}`} key={index}>
+                  <div className="relative w-full h-full">
+                    <img
+                      src={blog.thumbnail_img}
+                      alt={blog.title}
+                      className="w-4/5 h-full object-cover"
+                    />
+                    <div className="absolute bottom-1/2 left-3/5 right-0 bg-gray-500 bg-opacity-90 p-4">
+                      <h2 className="text-xl font-bold text-orange-600">{blog.title}</h2>
+                      {/* <p className="text-gray-600">{blog.description}</p> */}
+                      <div dangerouslySetInnerHTML={{ __html: blog.description.substring(0, 50) }} />
+                    </div>
                   </div>
-                </div>
+                </NavLink>
               </div>
             ))}
           </div>

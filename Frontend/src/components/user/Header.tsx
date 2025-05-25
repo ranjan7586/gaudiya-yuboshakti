@@ -58,6 +58,7 @@ const Header = () => {
                 <div className="top-nav border-t-2 p-3 shadow hidden md:flex items-center justify-around flex-wrap">
                     <div className="menus w-1/2">
                         <ul className='menu-list list-none flex items-center gap-10'>
+                            <NavLink to='/' className="menu-item text-xl transition-all duration-300 hover:text-orange-500">Home</NavLink>
                             <NavLink to='/research' className="menu-item text-xl transition-all duration-300 hover:text-orange-500">Research</NavLink>
                             <NavLink to='/centers' className="menu-item text-xl transition-all duration-300 hover:text-orange-500">Centers</NavLink>
                             <NavLink to='/forums' className="menu-item text-xl transition-all duration-300 hover:text-orange-500">Forums</NavLink>
@@ -74,6 +75,7 @@ const Header = () => {
                 {isMenuOpen && (
                     <div className="md:hidden border-t-2 p-3 shadow">
                         <ul className='list-none flex flex-col items-center gap-4'>
+                            <NavLink to='/' className="menu-item text-xl py-2 transition-all duration-300 hover:text-orange-500">Home</NavLink>
                             <NavLink to='/research' className="menu-item text-xl py-2 transition-all duration-300 hover:text-orange-500">Research</NavLink>
                             <NavLink to='/centers' className="menu-item text-xl py-2 transition-all duration-300 hover:text-orange-500">Centers</NavLink>
                             <NavLink to='/forums' className="menu-item text-xl py-2 transition-all duration-300 hover:text-orange-500">Forums</NavLink>

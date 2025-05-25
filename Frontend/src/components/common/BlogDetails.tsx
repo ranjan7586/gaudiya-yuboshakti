@@ -1,9 +1,12 @@
 import { useState, useEffect } from 'react';
 import { ChevronRight, Heart, MessageCircle, Share2, Bookmark, Clock, Calendar } from 'lucide-react';
 import axios from 'axios';
+import Header from '../user/Header';
+import Footer from '../user/Footer';
+import { Link } from 'react-router-dom';
 interface Author {
   name: string;
-  avatar: string;
+  profileImage: string;
   role: string;
   bio: string;
 }
@@ -19,10 +22,10 @@ interface Post {
   title: string;
   excerpt: string;
   description: string;
-  featuredImage: string;
-  category: string;
+  thumbnail_img: string;
+  category: any;
   tags: string[];
-  publishedDate: string;
+  date: string;
   readTime: string;
   author: Author;
   relatedPosts: relatedPost[];
@@ -54,77 +57,76 @@ export default function BlogDetails() {
     );
   }
 
-  return (
-    <div className="bg-gray-50 min-h-screen font-sans">
+  return (<>
+    <Header />
+    <div className="bg-gray-50 min-h-screen font-sans pt-66">
       {/* Navigation Bar */}
       <nav className="bg-white shadow-sm">
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <a href="/" className="text-2xl font-bold text-gray-800">DevBlog</a>
-          <div className="flex space-x-4">
+          <a href="/" className="text-2xl font-bold text-gray-800">Blog</a>
+          {/* <div className="flex space-x-4">
             <a href="/blog" className="text-gray-600 hover:text-gray-900">Blog</a>
             <a href="/categories" className="text-gray-600 hover:text-gray-900">Categories</a>
             <a href="/about" className="text-gray-600 hover:text-gray-900">About</a>
             <a href="/contact" className="text-gray-600 hover:text-gray-900">Contact</a>
-          </div>
+          </div> */}
         </div>
       </nav>
 
       {/* Breadcrumbs */}
-      <div className="bg-white border-b">
+      <div className="bg-white">
         <div className="container mx-auto px-4 py-3">
           <div className="flex items-center text-sm text-gray-600">
             <a href="/" className="hover:text-blue-600">Home</a>
             <ChevronRight size={16} className="mx-2" />
             <a href="/blog" className="hover:text-blue-600">Blog</a>
             <ChevronRight size={16} className="mx-2" />
-            <a href={`/blog/category/${post?.category.toLowerCase()}`} className="hover:text-blue-600">{post?.category}</a>
+            <Link to={`/list/category/${post?.category?.name}`} className="hover:text-blue-600">{post?.category?.name}</Link>
             <ChevronRight size={16} className="mx-2" />
             <span className="text-gray-500 truncate max-w-xs">{post?.title}</span>
           </div>
         </div>
       </div>
 
-      <div className="container mx-auto px-4 py-8 max-w-5xl">
+      <div className="container mx-auto px-4 py-8 max-w-4xl">
         {/* Article Header */}
         <div className="mb-8">
           <div className="flex items-center space-x-2 mb-3">
-            <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded">{post?.category}</span>
+            <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded">{post?.category?.name}</span>
           </div>
-          
+
           <h1 className="text-4xl font-bold text-gray-900 mb-4">{post?.title}</h1>
-          
+
           <p className="text-xl text-gray-600 mb-6">{post?.excerpt}</p>
-          
+
           <div className="flex items-center space-x-6">
             <div className="flex items-center">
-              <img src={post?.author.avatar} alt={post?.author.name} className="w-10 h-10 rounded-full mr-3" />
+              <img src={post?.author?.profileImage} alt={post?.author?.name} className="w-10 h-10 rounded-full mr-3" />
               <div>
-                <div className="font-medium text-gray-900">{post?.author.name}</div>
+                <div className="font-medium text-gray-900">{post?.author?.name}</div>
                 <div className="text-sm text-gray-500">{post?.author.role}</div>
               </div>
             </div>
-            
             <div className="flex items-center text-gray-500 text-sm">
-              <Calendar size={16} className="mr-1" />
-              <span>{post?.publishedDate}</span>
-            </div>
-            
-            <div className="flex items-center text-gray-500 text-sm">
-              <Clock size={16} className="mr-1" />
-              <span>{post?.readTime}</span>
+              <Clock size={16} className="mr-1" color='blue' />
+              <span className='text-blue-400 font-semibold'>{post?.readTime}</span>
             </div>
           </div>
         </div>
-        
+        <div className="flex items-center text-gray-500 text-sm mb-8">
+          <Calendar size={16} className="mr-1" color='black' />
+          <span className='mr-2 font-bold text-black'>Published On :</span><span className='text-blue-600 italic'>{post?.date}</span>
+        </div>
+
         {/* Featured Image */}
         <div className="mb-8 rounded-lg overflow-hidden shadow-lg">
-          <img 
-            src={post?.featuredImage} 
-            alt={post?.title} 
-            className="w-full h-auto"
+          <img
+            src={post?.thumbnail_img}
+            alt={post?.title}
+            className="h-140 w-full"
           />
         </div>
-        
+
         {/* Content Container */}
         <div className="flex flex-col md:flex-row gap-8">
           {/* Social Sharing Sidebar */}
@@ -142,18 +144,18 @@ export default function BlogDetails() {
               <Bookmark size={20} className="text-gray-700" />
             </button>
           </div>
-          
+
           {/* Main Content */}
           <div className="flex-1">
             <article className="prose prose-lg max-w-none">
               <div dangerouslySetInnerHTML={{ __html: post?.description || '' }} />
             </article>
-            
+
             {/* Tags */}
             <div className="mt-8 flex flex-wrap gap-2">
               {post?.tags.map((tag, index) => (
-                <a 
-                  key={index} 
+                <a
+                  key={index}
                   href={`/blog/tag/${tag.toLowerCase()}`}
                   className="bg-gray-100 hover:bg-gray-200 text-gray-800 px-3 py-1 rounded-full text-sm"
                 >
@@ -161,7 +163,7 @@ export default function BlogDetails() {
                 </a>
               ))}
             </div>
-            
+
             {/* Mobile Social Sharing */}
             <div className="md:hidden flex justify-center space-x-4 my-8">
               <button className="p-3 bg-gray-100 rounded-full hover:bg-gray-200">
@@ -177,11 +179,11 @@ export default function BlogDetails() {
                 <Bookmark size={20} />
               </button>
             </div>
-            
+
             {/* Author Bio */}
             <div className="mt-12 bg-blue-50 rounded-lg p-6">
               <div className="flex items-start space-x-4">
-                <img src={post?.author.avatar} alt={post?.author.name} className="w-16 h-16 rounded-full" />
+                <img src={post?.author?.profileImage} alt={post?.author.name} className="w-16 h-16 rounded-full" />
                 <div>
                   <h3 className="font-bold text-lg text-gray-900">About {post?.author.name}</h3>
                   <p className="text-gray-700 mt-2">{post?.author.bio}</p>
@@ -191,7 +193,7 @@ export default function BlogDetails() {
                 </div>
               </div>
             </div>
-            
+
             {/* Related Posts */}
             <div className="mt-12">
               <h3 className="text-2xl font-bold text-gray-900 mb-6">Related Articles</h3>
@@ -215,7 +217,7 @@ export default function BlogDetails() {
           </div>
         </div>
       </div>
-      
+
       {/* Newsletter Signup */}
       <div className="bg-gray-900 text-white py-16 mt-16">
         <div className="container mx-auto px-4 max-w-4xl text-center">
@@ -233,9 +235,12 @@ export default function BlogDetails() {
           </div>
         </div>
       </div>
-      
+
       {/* Footer */}
 
     </div>
+    <Footer />
+  </>
+
   );
 }

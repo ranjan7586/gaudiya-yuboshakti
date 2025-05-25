@@ -1,8 +1,10 @@
 import React, { useEffect } from 'react'
-import { NavLink } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
 import axiosAuth from '../../config/axios_auth';
 import { Plus, ArrowLeft, ArrowRight } from 'lucide-react';
-import { setUsers } from '../../contexts/UserContext';
+// import { setUsers } from '../../contexts/UserContext';
+import { toast } from 'react-toastify';
+import DeleteConfirmPopup from '../common/DeleteConfirmPopup';
 
 
 // type Props = {}
@@ -10,14 +12,16 @@ interface Post {
     _id: number;
     title: string;
     author: any; // or define a type for author if you know it
-    category: string;
+    category: any;
     status: string;
     date: string;
 }
 
 const PostsContent = () => {
+    const [isDeletePopupOpen, setIsDeletePopupOpen] = React.useState(false);
     const [posts, setPosts] = React.useState<Post[]>([]);
-    const { users } = setUsers();
+    const [selectedPost, setSelectedPost] = React.useState<Post | null>(null);
+    // const { users } = setUsers();
 
     const fetchPosts = async () => {
         try {
@@ -31,6 +35,23 @@ const PostsContent = () => {
             console.log(error)
         }
     }
+    const handleDelete = async () => {
+        try {
+            const { data } = await axiosAuth.delete(`${import.meta.env.VITE_BACKEND_URL}/api/v1/blog/delete/${selectedPost?._id}`)
+            console.log(data)
+            toast.success(data.message);
+            setIsDeletePopupOpen(false);
+            setSelectedPost(null);
+            fetchPosts();
+        } catch (error) {
+            toast.error('Error deleting category');
+        }
+    }
+    const handleCancelDelete = () => {
+        setIsDeletePopupOpen(false);
+        setSelectedPost(null);
+    }
+
     // const fetchUsers = async () => {
     //     try {
     //         const { data } = await axiosAuth.post(`${import.meta.env.VITE_BACKEND_URL}/api/v1/auth/users`);
@@ -75,13 +96,13 @@ const PostsContent = () => {
                                 <div className="font-medium">{post.title}</div>
                                 <div className="flex space-x-3 mt-1">
                                     <NavLink to={`/admin/posts/update-post/${post._id}`} className="text-blue-600 text-sm hover:underline">Edit</NavLink>
-                                    <button className="text-red-600 text-sm hover:underline">Delete</button>
-                                    <button className="text-gray-600 text-sm hover:underline">View</button>
+                                    <button className="text-red-600 text-sm hover:underline cursor-pointer" onClick={() => { setIsDeletePopupOpen(true); setSelectedPost(post) }}>Delete</button>
+                                    <Link to={`/blog/details/${post._id}`}> <button className="text-gray-600 text-sm hover:underline cursor-pointer">View</button></Link>
                                 </div>
                             </div>
                         </div>
-                        <div className="col-span-2">{users && users.find((author: any) => author._id === post.author)?.name}</div>
-                        <div className="col-span-2">{post.category}</div>
+                        <div className="col-span-2">{post?.author?.name}</div>
+                        <div className="col-span-2">{post?.category?.name}</div>
                         <div className="col-span-1">
                             <span className={`px-2 py-1 rounded-full text-xs ${post.status === 'Published' ? 'bg-green-100 text-green-800' :
                                 post.status === 'Draft' ? 'bg-gray-100 text-gray-800' :
@@ -108,6 +129,12 @@ const PostsContent = () => {
                     </button>
                 </div>
             </div>
+            <DeleteConfirmPopup
+                isOpen={isDeletePopupOpen}
+                onConfirm={handleDelete}
+                onCancel={handleCancelDelete}
+                itemName={selectedPost?.title || undefined}
+            />
         </div>
     )
 }

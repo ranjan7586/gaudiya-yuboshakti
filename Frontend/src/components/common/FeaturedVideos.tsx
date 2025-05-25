@@ -97,11 +97,11 @@ const FeaturedVideos: React.FC = () => {
                                     className="w-full h-48 object-cover"
                                 /> */}
                                 <iframe className='w-full h-48' src={video.src}></iframe>
-                                <div className="absolute inset-0 flex items-center justify-center">
-                                    <button className="bg-white bg-opacity-80 rounded-full p-8 hover:bg-opacity-100 transition duration-300">
+                                {/* <div className="absolute inset-0 flex items-center justify-center">
+                                    <button className="bg-white bg-opacity-80 rounded-full p-8 hover:bg-opacity-100 transition duration-300 z-0">
                                         <div className="w-0 h-0 border-t-8 border-t-transparent border-l-16 border-l-blue-600 border-b-8 border-b-transparent ml-1"></div>
                                     </button>
-                                </div>
+                                </div> */}
                                 {video.category && (
                                     <span className="absolute top-2 left-2 bg-blue-600 text-white text-xs px-2 py-1 rounded">
                                         {video.category}

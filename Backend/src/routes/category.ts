@@ -9,7 +9,7 @@ router.post('/list', async (req: Request, res: Response) => {
     await CategoryController.index(req, res);
 })
 
-router.get('/:id', async (req: Request, res: Response) => {
+router.get('/details/:id', async (req: Request, res: Response) => {
     await CategoryController.show(req, res);
 })
 
