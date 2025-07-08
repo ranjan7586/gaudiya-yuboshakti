@@ -9,7 +9,7 @@ import express, { Request, Response } from 'express';
 
 dotenv.config();
 const app = express();
-const allowedOrigins = ['http://localhost:5173', 'https://gaudiya-yuboshakti.vercel.app/'];
+const allowedOrigins = ['http://localhost:5173', 'https://gaudiya-yuboshakti.vercel.app'];
 app.use(cors({
     origin: function (origin, callback) {
         if (!origin || allowedOrigins.indexOf(origin) !== -1) {
