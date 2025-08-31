@@ -5,6 +5,8 @@ import FeaturedBlogs from '../../components/common/FeaturedBlogs'
 import Footer from '../../components/user/Footer'
 import ContactUs from '../../components/user/ContactUs'
 import FeaturedVideos from '../../components/common/FeaturedVideos'
+import ForumApp from '../../components/user/Forum'
+import InitiativesSection from '../../components/user/Initiatives'
 
 
 const Home = () => {
@@ -16,8 +18,10 @@ const Home = () => {
           <HeroCarousel />
           <FeaturedBlogs />
           <LatestBlogs />
-          <FeaturedVideos/>
-          <ContactUs/>
+          <ForumApp />
+          <InitiativesSection/>
+          <FeaturedVideos />
+          <ContactUs />
         </main>
         <Footer />
       </div>

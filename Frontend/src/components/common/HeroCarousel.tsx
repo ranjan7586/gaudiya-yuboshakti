@@ -19,7 +19,7 @@ const HeroCarousel = () => {
     try {
       const { data } = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/v1/blog/list`, {
         page: 1,
-        limit: 6,
+        display_per_page: 6,
         filterType: 'tags',
         filterBy: 'trending',
       });
