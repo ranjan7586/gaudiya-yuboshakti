@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 import connectDB from './DB/conn';
 import AuthRouter from './routes/auth';
 import NewsRouter from './routes/blog';
+import ForumRouter from './routes/forum';
 import UploadRouter from './routes/upload';
 import CategoryRouter from './routes/category';
 import express, { Request, Response } from 'express';
@@ -28,10 +29,11 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 connectDB();
 app.use('/api/v1/blog', NewsRouter);
 app.use('/api/v1/auth', AuthRouter);
+app.use('/api/v1/forums', ForumRouter);
 app.use('/api/v1/upload', UploadRouter);
 app.use('/api/v1/categories',CategoryRouter);
 app.get('/api/v1', (_req: Request, res: Response) => {
-    res.send('Server is running!');
+    res.send('Server is running - api-v1!');
 });
 
 app.get('/', (_req: Request, res: Response) => {

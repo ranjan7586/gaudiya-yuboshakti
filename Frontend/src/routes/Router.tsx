@@ -13,6 +13,7 @@ import PostsContent from '../components/Admin/PostsContent'
 import CategoriesContent from '../components/Admin/CategoriesContent'
 import UsersContent from '../components/Admin/UsersContent'
 import ScrollToTop from '../contexts/ScrollToTop'
+import ForumsContent from '../components/Admin/ForumsContent'
 
 
 const Router = () => {
@@ -34,6 +35,7 @@ const Router = () => {
           {/* <Route path='add-blog' element={<BlogEditor />} /> */}
           <Route path='dashboard' element={<AdminDashboard />} />
           <Route path='posts' element={<PostsContent />} />
+          <Route path='forums' element={<ForumsContent />} />
           <Route path='users' element={<UsersContent />} />
           <Route path='categories' element={<CategoriesContent />} />
           <Route path='posts/add-post' element={<CreateBlog />} />

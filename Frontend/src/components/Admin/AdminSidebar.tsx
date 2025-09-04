@@ -1,6 +1,6 @@
 import React from 'react'
 import SidebarItem from './SidebarItem';
-import { Menu, X, Settings, Home, Users, Tag, Grid, FileText, LogOut, Moon } from 'lucide-react';
+import { Menu, X, Settings, Home, Users, Tag, Grid, FileText, LogOut, Moon, FormInput } from 'lucide-react';
 import { NavLink, useNavigate } from 'react-router-dom';
 
 type Props = {
@@ -58,6 +58,16 @@ const AdminSidebar = ({ sidebarOpen, currentPage, setCurrentPage, darkMode, setD
                             isOpen={sidebarOpen}
                             onClick={() => setCurrentPage('categories')}
                             isActive={currentPage === 'categories'}
+                            darkMode={darkMode}
+                        />
+                    </NavLink>
+                    <NavLink to={'/admin/forums'}>
+                        <SidebarItem
+                            icon={<FormInput size={20} />}
+                            label="Forums"
+                            isOpen={sidebarOpen}
+                            onClick={() => setCurrentPage('forums')}
+                            isActive={currentPage === 'forums'}
                             darkMode={darkMode}
                         />
                     </NavLink>
