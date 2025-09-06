@@ -2,6 +2,7 @@ import React from 'react';
 import logo from '../../assets/logo.jpeg'
 import { NavLink } from 'react-router-dom'
 import { Menu, X } from 'lucide-react';
+// import LogoGY from '../common/LogoGY';
 
 
 const Header = () => {
@@ -36,6 +37,7 @@ const Header = () => {
                 <div className='flex items-center justify-around p-3'>
                     <div className='w-1/4 md:w-1/4'>
                         <img className='w-20 h-20 md:w-40 md:h-40' src={logo} alt="Gaudiya Yuboshakti" />
+
                     </div>
                     <div>
                         <p className="text-2xl md:text-4xl uppercase text-orange-500 font-bold inline-block pb-1 transition-all ease-in-out duration-300 border-b-0 hover:border-b-4 border-transparent hover:border-orange-700 hover:text-orange-700">
@@ -53,6 +55,12 @@ const Header = () => {
                         </button>
                     </div>
                 </div>
+
+                {/* <div className='mb-5 flex justify-center'>
+                    <div className='container'>
+                        <LogoGY />
+                    </div>
+                </div> */}
 
                 {/* Desktop Navigation */}
                 <div className="top-nav border-t-2 p-3 shadow hidden md:flex items-center justify-around flex-wrap">

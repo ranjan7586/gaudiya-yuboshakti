@@ -61,6 +61,16 @@ const AdminSidebar = ({ sidebarOpen, currentPage, setCurrentPage, darkMode, setD
                             darkMode={darkMode}
                         />
                     </NavLink>
+                    <NavLink to={'/admin/tags'}>
+                        <SidebarItem
+                            icon={<Tag size={20} />}
+                            label="Tags"
+                            isOpen={sidebarOpen}
+                            onClick={() => setCurrentPage('tags')}
+                            isActive={currentPage === 'tags'}
+                            darkMode={darkMode}
+                        />
+                    </NavLink>
                     <NavLink to={'/admin/forums'}>
                         <SidebarItem
                             icon={<FormInput size={20} />}

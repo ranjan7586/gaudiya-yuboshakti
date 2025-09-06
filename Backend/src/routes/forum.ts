@@ -1,3 +1,4 @@
+import { upload } from '../utils/cloudinary';
 import express, { Request, Response } from 'express';
 import ForumController from '../controllers/ForumController';
 import { authMiddleware } from '../middlewares/authMiddleware';
@@ -13,11 +14,11 @@ router.get('/details/:id', async (req: Request, res: Response) => {
 });
 
 router.use(authMiddleware, adminMiddleware);
-router.post('/create', async (req: Request, res: Response) => {
+router.post('/create', upload.single('thumbnail_img'), async (req: Request, res: Response) => {
     await ForumController.create(req, res);
 });
 
-router.patch('/update/:id', async (req: Request, res: Response) => {
+router.patch('/update/:id', upload.single('thumbnail_img'), async (req: Request, res: Response) => {
     await ForumController.update(req, res);
 });
 

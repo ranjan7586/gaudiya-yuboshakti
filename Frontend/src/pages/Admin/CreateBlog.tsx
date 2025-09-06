@@ -4,17 +4,26 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import BlogEditor from '../../components/common/BlogEditor';
 import { Calendar, Clock, Image, User } from 'lucide-react';
+
 type User = {
   _id: string;
   name: string;
   email: string;
 };
+
+// Updated Category type to include a parent object with _id
 type Category = {
   _id: string;
   name: string;
   slug: string;
   description: string;
+  parent?: {
+    _id: string;
+    name: string;
+    slug: string;
+  };
 }
+
 interface CreateBlogProps {
   is_update?: boolean
 }
@@ -24,33 +33,40 @@ const CreateBlog: React.FC<CreateBlogProps> = ({ is_update = false }: CreateBlog
   const [formData, setFormData] = useState<{
     title: string;
     description: string;
-    category: any;
+    // Changed to an array of strings to hold multiple category IDs
+    categories: string[];
     tags: string[];
-    author: any;
+    author: string;
     date: string;
     readTime: string;
     thumbnail_img: File | null | string;
   }>({
     title: '',
     description: '',
-    category: '',
+    categories: [],
     tags: [],
     author: '',
     date: '',
     readTime: '',
     thumbnail_img: null
   });
+
   const { id } = useParams<{ id: string }>();
+  const [users, setUsers] = useState<User[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   useEffect(() => {
     setUpdateId(id);
-    if (is_update) {
+    if (is_update && id) {
       const fetchBlog = async () => {
         try {
           const { data } = await axiosAuth.get(`${import.meta.env.VITE_BACKEND_URL}/api/v1/blog/${id}`);
           setFormData({
             title: data.data.title,
             description: data.data.description,
-            category: data.data.category?._id,
+            // Extracting IDs from the array of category objects
+            categories: data.data.categories.map((cat: { _id: string }) => cat._id),
             tags: data.data.tags,
             author: data.data.author?._id,
             date: data.data.date,
@@ -58,47 +74,40 @@ const CreateBlog: React.FC<CreateBlogProps> = ({ is_update = false }: CreateBlog
             thumbnail_img: data.data.thumbnail_img
           });
         } catch (error) {
-          console.log(error)
+          console.error("Failed to fetch blog data:", error);
         }
       }
       fetchBlog();
     }
-  }, [])
-
-  // const currentUser = JSON.parse(localStorage.getItem('currentUser') ?? '{}');
-
-
-  // const [darkMode, setDarkMode] = useState(true);
-  const [users, setUsers] = useState<User[]>([]);
-  const [categories, setCategories] = useState<Category[]>([]);
-  // const [isSuccess, setIsSuccess] = useState(false);
-  // const [sidebarOpen, setSidebarOpen] = useState(true);
-  // const [currentPage, setCurrentPage] = useState('posts');
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  // const toggleSidebar = () => {
-  //   setSidebarOpen(!sidebarOpen);
-  // };
+  }, [is_update, id])
 
   const fetchUsers = async () => {
     try {
       const { data } = await axiosAuth.post(`${import.meta.env.VITE_BACKEND_URL}/api/v1/auth/users`);
       if (data) setUsers(data.data);
     } catch (error) {
-      console.log(error)
+      console.error("Failed to fetch users:", error);
     }
   }
 
-  const handleChange = (e: any) => {
+  const fetchCategories = async () => {
+    try {
+      const { data } = await axiosAuth.post(`${import.meta.env.VITE_BACKEND_URL}/api/v1/categories/list`);
+      if (data.data) setCategories(data.data);
+    } catch (error) {
+      console.error("Failed to fetch categories:", error);
+    }
+  }
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    console.log(name,value)
     setFormData(prev => ({ ...prev, [name]: value }));
-    console.log(formData)
   };
 
   const handleEditorChange = (value: any) => {
     setFormData(prev => ({ ...prev, description: value }));
   };
+
   const handleTagChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value, checked } = e.target;
     setFormData(prev => ({
@@ -108,61 +117,66 @@ const CreateBlog: React.FC<CreateBlogProps> = ({ is_update = false }: CreateBlog
         : prev.tags.filter(tag => tag !== value) // remove tag
     }));
   };
+
+  // New handler for category checkboxes
+  const handleCategoryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { value, checked } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      categories: checked
+        ? [...prev.categories, value]
+        : prev.categories.filter(catId => catId !== value)
+    }));
+  };
+
   const navigate = useNavigate();
-  const handleSubmit = async (e: any) => {
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+
+    const form = new FormData();
+    form.append('title', formData.title);
+    form.append('description', formData.description);
+
+    // Append each category ID to the form data
+    formData.categories.forEach(categoryId => {
+      form.append('categories', categoryId);
+    });
+
+    formData.tags.forEach(tag => {
+      form.append("tags", tag);
+    });
+
+    form.append('author', formData.author);
+    form.append('date', formData.date);
+    form.append('readTime', formData.readTime);
+
+    if (formData.thumbnail_img instanceof File) {
+      form.append('thumbnail_img', formData.thumbnail_img);
+    }
+
     try {
-      if (is_update) {
-        console.log(formData);
-        const { data } = await axiosAuth.patch(`${import.meta.env.VITE_BACKEND_URL}/api/v1/blog/update/${updateId}`, formData, {
+      if (is_update && updateId) {
+        const { data } = await axiosAuth.patch(`${import.meta.env.VITE_BACKEND_URL}/api/v1/blog/update/${updateId}`, form, {
           headers: {
             "Content-Type": 'multipart/form-data'
           }
         });
-        setIsSubmitting(false);
-        // setIsSuccess(true);
-        toast.success(data.data.message);
-        setFormData({
-          title: '',
-          description: '',
-          category: '',
-          tags: [] as string[],
-          author: '',
-          date: '',
-          readTime: '',
-          thumbnail_img: null
-        });
+        toast.success(data.message);
         navigate('/admin/posts');
-        return;
       } else {
-        const form = new FormData();
-        form.append('title', formData.title);
-        form.append('description', formData.description);
-        form.append('category', formData.category);
-        formData.tags.forEach(tag => {
-          form.append("tags", tag);
-        });
-        form.append('author', formData.author);
-        form.append('date', formData.date);
-        form.append('readTime', formData.readTime);
-
-        if (formData.thumbnail_img) {
-          form.append('thumbnail_img', formData.thumbnail_img); // ✅ File goes here
-        }
         const { data } = await axiosAuth.post(`${import.meta.env.VITE_BACKEND_URL}/api/v1/blog/create`, form, {
           headers: {
             "Content-Type": 'multipart/form-data'
           }
         });
-        console.log(data);
         toast.success(data.message);
-        setIsSubmitting(false);
-        // setIsSuccess(true);
+        // Reset form on successful creation
         setFormData({
           title: '',
           description: '',
-          category: '',
+          categories: [],
           tags: [] as string[],
           author: '',
           date: '',
@@ -170,65 +184,53 @@ const CreateBlog: React.FC<CreateBlogProps> = ({ is_update = false }: CreateBlog
           thumbnail_img: null
         });
       }
-    } catch (error) {
-      console.log(error);
+    } catch (error: any) {
+      console.error("Submission error:", error);
+      toast.error(error.response?.data?.message || 'An error occurred');
+    } finally {
+      setIsSubmitting(false);
     }
   };
-
-  const fetchCategories = async () => {
-    try {
-      const { data } = await axiosAuth.post(`${import.meta.env.VITE_BACKEND_URL}/api/v1/categories/list`);
-      console.log(data)
-      if (data.data) setCategories(data?.data);
-    } catch (error) {
-      console.log(error)
-    }
-  }
 
   useEffect(() => {
     fetchUsers();
     fetchCategories();
   }, []);
 
+  // Helper function to render categories in a tree structure
+  const renderCategoryTree = (categoryList: Category[], parentId: string | undefined = undefined, depth: number = 0) => {
+    return categoryList
+      .filter(cat => (cat.parent?._id ?? undefined) === parentId)
+      .map(category => (
+        <div key={category._id} className="relative group">
+          <label className={`inline-flex items-center space-x-2 w-full p-2 hover:bg-gray-100 rounded-md transition-colors cursor-pointer`}
+            style={{ paddingLeft: `${16 + depth * 20}px` }}>
+            <input
+              type="checkbox"
+              name="categories"
+              value={category._id}
+              checked={formData.categories.includes(category._id)}
+              onChange={handleCategoryChange}
+              className="form-checkbox h-4 w-4 text-blue-600 rounded-md"
+            />
+            <span className="text-gray-700">{category.name}</span>
+          </label>
+          {/* Recursively render children */}
+          {renderCategoryTree(categoryList, category._id, depth + 1)}
+        </div>
+      ));
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 text-gray-800">
-      {/* Header */}
-      {/* <header className="bg-gray-900 text-white px-6 py-4">
-        <div className="max-w-6xl mx-auto flex justify-between items-center">
-          <div className="flex items-center space-x-2">
-            <div className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center">
-              <FileText size={20} />
-            </div>
-            <h1 className="text-xl font-semibold">NewsPress Admin</h1>
-          </div>
-          <div className="flex items-center space-x-4">
-            <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center">
-                <User size={16} />
-              </div>
-              <span>Admin</span>
-            </div>
-          </div>
-        </div>
-      </header> */}
-
-      <div className="flex">
-        {/* Main Content - WordPress-like Layout */}
-        {/* {isSuccess && (
-          <div className="mb-6 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
-            <p>Article published successfully!</p>
-          </div>
-        )} */}
+      <div className="">
         <div className="form_content p-6">
-
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold">Add New Article</h2>
+            <h2 className="text-2xl font-bold">{is_update ? 'Update Article' : 'Add New Article'}</h2>
           </div>
 
           <form onSubmit={handleSubmit} className="flex flex-col lg:flex-row gap-6">
-            {/* Left Column - Title and Editor (Full Height) */}
             <div className="lg:w-2/3 flex flex-col">
-              {/* Title */}
               <div className="bg-white shadow-md rounded-lg mb-6 p-6">
                 <input
                   type="text"
@@ -242,7 +244,6 @@ const CreateBlog: React.FC<CreateBlogProps> = ({ is_update = false }: CreateBlog
                 />
               </div>
 
-              {/* Description - Blog Editor (Full Height) */}
               <div className="bg-white shadow-md rounded-lg flex-1 flex flex-col overflow-hidden">
                 <div className="p-4 border-b border-gray-200">
                   <h3 className="font-medium text-gray-700">Content</h3>
@@ -253,15 +254,12 @@ const CreateBlog: React.FC<CreateBlogProps> = ({ is_update = false }: CreateBlog
               </div>
             </div>
 
-            {/* Right Column - Settings and Publish */}
             <div className="lg:w-1/3 space-y-6">
-              {/* Publish Panel */}
               <div className="bg-white shadow-md rounded-lg overflow-hidden">
                 <div className="p-4 bg-gray-50 border-b border-gray-200">
                   <h3 className="font-medium text-gray-700">Publish</h3>
                 </div>
                 <div className="p-4 space-y-4">
-                  {/* Date */}
                   <div>
                     <label htmlFor="date" className="block text-sm font-medium text-gray-700 mb-1">
                       Publication Date
@@ -281,8 +279,6 @@ const CreateBlog: React.FC<CreateBlogProps> = ({ is_update = false }: CreateBlog
                       />
                     </div>
                   </div>
-
-                  {/* Submit Button */}
                   <div className="flex flex-col space-y-2">
                     <button
                       type="submit"
@@ -302,32 +298,20 @@ const CreateBlog: React.FC<CreateBlogProps> = ({ is_update = false }: CreateBlog
                 </div>
               </div>
 
-              {/* Category */}
+              {/* Category Panel with tree-like structure */}
               <div className="bg-white shadow-md rounded-lg overflow-hidden">
                 <div className="p-4 bg-gray-50 border-b border-gray-200">
-                  <h3 className="font-medium text-gray-700">Category</h3>
+                  <h3 className="font-medium text-gray-700">Categories</h3>
                 </div>
-                <div className="p-4">
-                  <select
-                    id="category"
-                    name="category"
-                    value={formData.category || ''}
-                    onChange={handleChange}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    required
-                  >
-                    <option value="">Select a category</option>
-                    {categories.map((category) => (
-                      <option key={category._id} value={category._id}>
-                        {category.name}
-                      </option>
-                    ))}
-                  </select>
-
+                <div className="p-4 h-60 overflow-y-auto custom-scrollbar">
+                  {categories.length > 0 ? (
+                    renderCategoryTree(categories, undefined, 0)
+                  ) : (
+                    <p className="text-center text-gray-500">No categories found.</p>
+                  )}
                 </div>
               </div>
 
-              {/* Tags */}
               <div className="bg-white shadow-md rounded-lg overflow-hidden">
                 <div className="p-4 bg-gray-50 border-b border-gray-200">
                   <h3 className="font-medium text-gray-700">Tags</h3>
@@ -349,7 +333,6 @@ const CreateBlog: React.FC<CreateBlogProps> = ({ is_update = false }: CreateBlog
                 </div>
               </div>
 
-              {/* Author Select */}
               <div className="bg-white shadow-md rounded-lg overflow-hidden">
                 <div className="p-4 bg-gray-50 border-b border-gray-200">
                   <h3 className="font-medium text-gray-700">Author</h3>
@@ -382,8 +365,6 @@ const CreateBlog: React.FC<CreateBlogProps> = ({ is_update = false }: CreateBlog
                 </div>
               </div>
 
-
-              {/* Read Time */}
               <div className="bg-white shadow-md rounded-lg overflow-hidden">
                 <div className="p-4 bg-gray-50 border-b border-gray-200">
                   <h3 className="font-medium text-gray-700">Read Time</h3>
@@ -408,13 +389,11 @@ const CreateBlog: React.FC<CreateBlogProps> = ({ is_update = false }: CreateBlog
                 </div>
               </div>
 
-              {/* Featured Image */}
               <div className="bg-white shadow-md rounded-lg overflow-hidden">
                 <div className="p-4 bg-gray-50 border-b border-gray-200">
                   <h3 className="font-medium text-gray-700">Featured Image</h3>
                 </div>
                 <div className="p-4 space-y-4">
-                  {/* File Upload Area */}
                   {!formData.thumbnail_img && (
                     <div className="border-2 border-dashed border-gray-300 rounded-md p-6 text-center hover:border-blue-500 transition-colors cursor-pointer bg-gray-50">
                       <input
@@ -426,16 +405,13 @@ const CreateBlog: React.FC<CreateBlogProps> = ({ is_update = false }: CreateBlog
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                           const file = e.target.files?.[0];
                           if (file) {
-                            console.log("Selected file:", file);
-
                             setFormData((prev) => ({
                               ...prev,
-                              thumbnail_img: file, // now setting the file object directly
+                              thumbnail_img: file,
                             }));
                           }
                         }}
                       />
-
                       <label htmlFor="thumbnail_img_file" className="cursor-pointer flex flex-col items-center">
                         <Image size={36} className="text-gray-400 mb-2" />
                         <span className="text-gray-700 font-medium">Set featured image</span>
@@ -445,7 +421,6 @@ const CreateBlog: React.FC<CreateBlogProps> = ({ is_update = false }: CreateBlog
                     </div>
                   )}
 
-                  {/* Preview Image */}
                   {formData.thumbnail_img && (
                     <div className="space-y-3">
                       <div className="w-full border border-gray-300 rounded-md overflow-hidden bg-gray-50">
@@ -485,4 +460,4 @@ const CreateBlog: React.FC<CreateBlogProps> = ({ is_update = false }: CreateBlog
   );
 }
 
-export default CreateBlog
+export default CreateBlog;

@@ -5,10 +5,17 @@ class NewsController {
     async create(req: Request, res: Response) {
         try {
             if (!req.body) return res.status(400).json({ message: 'No data provided' });
-            const require_arr = ['title', 'description', 'author', 'category', 'date',];
-            const missing_fields = require_arr.filter((field) => req.body[field] === undefined || !req.body[field]);
+            // Updated to check for 'categories' (plural) as an array
+            const require_arr = ['title', 'description', 'author', 'categories', 'date'];
+            const missing_fields = require_arr.filter((field) => {
+                if (field === 'categories') {
+                    // Check if categories is an array and not empty
+                    return !Array.isArray(req.body[field]) || req.body[field].length === 0;
+                }
+                return req.body[field] === undefined || !req.body[field];
+            });
             if (missing_fields.length > 0) {
-                return res.status(400).json({ message: `Missing required fields: ${missing_fields.join(', ')}` });
+                return res.status(400).json({ message: `Missing or invalid required fields: ${missing_fields.join(', ')}` });
             }
             const result = await NewsService.createNews(req);
             return res.status(200).json({ message: 'News created successfully', data: result });
@@ -35,12 +42,6 @@ class NewsController {
     async update(req: Request, res: Response) {
         try {
             if (!req.body) return res.status(400).json({ message: 'No data provided' });
-            /*
-            const require_arr = ['title', 'description', 'author', 'category', 'date'];
-            const missing_fields = require_arr.filter((field) => req.body[field] === undefined || !req.body[field]);
-            if (missing_fields.length > 0) {
-                return res.status(400).json({ message: `Missing required fields: ${missing_fields.join(', ')}` });
-            }*/
             const result = await NewsService.updateNews(req);
             return res.status(200).json({ message: 'News updated successfully', data: result });
         } catch (error) {
@@ -66,6 +67,5 @@ class NewsController {
         }
     }
 }
-
 
 export default new NewsController();

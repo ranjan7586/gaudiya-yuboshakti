@@ -14,12 +14,14 @@ import CategoriesContent from '../components/Admin/CategoriesContent'
 import UsersContent from '../components/Admin/UsersContent'
 import ScrollToTop from '../contexts/ScrollToTop'
 import ForumsContent from '../components/Admin/ForumsContent'
+import CreateForum from '../pages/Admin/CreateForum'
+import TagsContent from '../components/Admin/TagsContent'
 
 
 const Router = () => {
   return (
     <BrowserRouter>
-    <ScrollToTop />
+      <ScrollToTop />
       <Routes>
         <Route path='/' element={<Home />} />
         <Route path='/headertest' element={<HeaderTest />} />
@@ -38,7 +40,10 @@ const Router = () => {
           <Route path='forums' element={<ForumsContent />} />
           <Route path='users' element={<UsersContent />} />
           <Route path='categories' element={<CategoriesContent />} />
+          <Route path='tags' element={<TagsContent />} />
           <Route path='posts/add-post' element={<CreateBlog />} />
+          <Route path='forums/add-forum' element={<CreateForum />} />
+          <Route path='forums/update-forum/:id' element={<CreateForum is_update={true} />} />
           <Route path='posts/update-post/:id' element={<CreateBlog is_update={true} />} />
         </Route>
         {/* <Route path='/admin' element={<AdminPanel />} /> */}

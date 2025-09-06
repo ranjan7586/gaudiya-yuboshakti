@@ -112,16 +112,92 @@ const blogPostsData: BlogPost[] = [
 
 const InitiativesSection: React.FC = () => {
   const [selectedInitiative, setSelectedInitiative] = useState<string>("eurasian-studies");
+  // State for mobile accordion
+  const [accordionOpen, setAccordionOpen] = useState<string | null>(initiativesData[0]?.slug || null);
 
   const filteredBlogs = blogPostsData.filter(blog => blog.initiative === selectedInitiative);
   const displayBlogs = filteredBlogs.length >= 2 ? filteredBlogs.slice(0, 2) : filteredBlogs;
 
+  const handleAccordionClick = (slug: string) => {
+    setAccordionOpen(accordionOpen === slug ? null : slug);
+    setSelectedInitiative(slug);
+  };
+
   return (
     <div className="bg-gray-900 text-white min-h-screen">
       <div className="container mx-auto px-4">
-        <div className="flex">
-          {/* Left Sidebar - Initiatives List */}
-          <div className="w-80 bg-gray-800 min-h-screen">
+        <div className="flex flex-col sm:flex-row">
+          {/* Mobile Accordion View */}
+          <div className="w-full sm:hidden">
+            <h2 className="text-2xl font-bold mb-4">Initiatives</h2>
+            <div className="space-y-2">
+              {initiativesData.map((initiative) => (
+                <div key={initiative.id}>
+                  <button
+                    onClick={() => handleAccordionClick(initiative.slug)}
+                    className="w-full flex justify-between items-center px-4 py-3 bg-gray-800 text-white rounded-lg transition-colors hover:bg-gray-700"
+                  >
+                    <span className="font-medium">{initiative.name}</span>
+                    <ChevronUp
+                      size={20}
+                      className={`transition-transform duration-300 ${accordionOpen === initiative.slug ? 'transform rotate-0' : 'transform rotate-180'
+                        }`}
+                    />
+                  </button>
+                  {accordionOpen === initiative.slug && (
+                    <div className="mt-2 p-4 bg-gray-800 rounded-lg">
+                      <div className="grid gap-8">
+                        {filteredBlogs.length > 0 ? (
+                          filteredBlogs.map((blog) => (
+                            <div
+                              key={blog.id}
+                              className="bg-gray-700 rounded-lg overflow-hidden cursor-pointer"
+                            >
+                              <div className="flex flex-col sm:flex-row">
+                                <div className="w-full sm:w-1/3">
+                                  <img
+                                    src={blog.image}
+                                    alt={blog.title}
+                                    className="w-full h-48 object-cover"
+                                  />
+                                </div>
+                                <div className="w-full sm:w-2/3 p-4 sm:p-6">
+                                  <div className="flex items-center gap-4 mb-2 sm:mb-3">
+                                    <span className="text-yellow-400 text-sm font-medium">
+                                      {blog.category}
+                                    </span>
+                                    <span className="text-gray-400 text-sm">
+                                      {blog.date}
+                                    </span>
+                                  </div>
+                                  <h3 className="text-lg sm:text-xl font-bold mb-2 sm:mb-4 leading-tight">
+                                    {blog.title}
+                                  </h3>
+                                  <div className="flex items-center">
+                                    <div className="w-8 h-0.5 bg-yellow-400 mr-3"></div>
+                                    <span className="text-yellow-400 text-sm font-medium uppercase tracking-wide">
+                                      {blog.author}
+                                    </span>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          ))
+                        ) : (
+                          <div className="text-center py-4">
+                            <p className="text-gray-400 text-sm">No articles found for this initiative.</p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Desktop Sidebar View */}
+          <div className="w-80 bg-gray-800 min-h-screen hidden sm:block">
             <div className="p-6">
               <h2 className="text-2xl font-bold mb-8">Initiatives</h2>
               <div className="space-y-1 max-h-[calc(100vh-120px)] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-700">
@@ -129,11 +205,10 @@ const InitiativesSection: React.FC = () => {
                   <button
                     key={initiative.id}
                     onClick={() => setSelectedInitiative(initiative.slug)}
-                    className={`w-full text-left px-4 py-3 rounded-lg transition-all duration-200 ${
-                      selectedInitiative === initiative.slug
+                    className={`w-full text-left px-4 py-3 rounded-lg transition-all duration-200 ${selectedInitiative === initiative.slug
                         ? 'bg-blue-600 text-white'
                         : 'text-gray-300 hover:bg-gray-700 hover:text-white'
-                    }`}
+                      }`}
                   >
                     {initiative.name}
                   </button>
@@ -142,8 +217,8 @@ const InitiativesSection: React.FC = () => {
             </div>
           </div>
 
-          {/* Right Content Area - Blog Cards */}
-          <div className="flex-1 p-8">
+          {/* Right Content Area - Blog Cards (Desktop) */}
+          <div className="flex-1 p-8 hidden sm:block">
             <div className="max-w-4xl">
               {displayBlogs.length > 0 ? (
                 <div className="grid gap-8">

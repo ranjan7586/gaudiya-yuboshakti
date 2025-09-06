@@ -1,11 +1,14 @@
 import mongoose from "mongoose";
+
+// Interface for the News model
 interface INews extends mongoose.Document {
     title: string;
     description: string;
     author: mongoose.Schema.Types.ObjectId;
-    category: mongoose.Schema.Types.ObjectId;
+    // Modified to be an array of ObjectIds to allow a single post to have multiple categories.
+    categories: mongoose.Schema.Types.ObjectId[];
     date: string;
-    tags: string[];
+    tags: mongoose.Schema.Types.ObjectId[];
     readTime: string;
     thumbnail_img: string;
     deletedAt: Date;
@@ -20,15 +23,16 @@ const newsSchema: mongoose.Schema = new mongoose.Schema<INews>({
         type: String,
         required: true
     },
-    category: {
+    categories: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: "Category",
         required: true
-    },
-    tags: {
-        type: [String],
+    }],
+    tags: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Tag",
         required: false
-    },
+    }],
     author: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
@@ -54,5 +58,5 @@ const newsSchema: mongoose.Schema = new mongoose.Schema<INews>({
     timestamps: true
 })
 
-const News = mongoose.model("News", newsSchema);
-export default News
+const News = mongoose.model<INews>("News", newsSchema);
+export default News;

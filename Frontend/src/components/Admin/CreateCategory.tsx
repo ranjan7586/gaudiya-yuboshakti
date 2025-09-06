@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from 'react';
 
 interface Props {
-    handleCreate: (name: string, slug: string, description: string) => void;
-    handleUpdate: (id: string, name: string, slug: string, description: string) => void;
+    handleCreate: (name: string, slug: string, description: string, parentId: string | null) => void;
+    handleUpdate: (id: string, name: string, slug: string, description: string, parentId: string | null) => void;
     categoryData: any;
+    categories: any[]; // Add the categories prop
 }
 
-const CreateCategory: React.FC<Props> = ({ handleCreate, categoryData, handleUpdate }) => {
-    console.log("render")
+const CreateCategory: React.FC<Props> = ({ handleCreate, categoryData, handleUpdate, categories }) => {
+    console.log(categoryData)
     const [formData, setFormData] = useState({ name: '', slug: '', description: '' });
+    const [parentId, setParentId] = useState<string | null>(null);
 
     useEffect(() => {
         setFormData({
@@ -16,6 +18,7 @@ const CreateCategory: React.FC<Props> = ({ handleCreate, categoryData, handleUpd
             slug: categoryData?.slug || '',
             description: categoryData?.description || ''
         });
+        setParentId(categoryData?.parent?._id || '');
     }, [categoryData]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -23,14 +26,20 @@ const CreateCategory: React.FC<Props> = ({ handleCreate, categoryData, handleUpd
         setFormData(prev => ({ ...prev, [name]: value }));
     };
 
+    const handleParentChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const { value } = e.target;
+        setParentId(value === '' ? null : value);
+    };
+
     const handleSubmit = () => {
         const { name, slug, description } = formData;
         if (categoryData?._id) {
-            handleUpdate(categoryData._id, name, slug, description);
+            handleUpdate(categoryData._id, name, slug, description, parentId);
         } else {
-            handleCreate(name, slug, description);
+            handleCreate(name, slug, description, parentId);
         }
         setFormData({ name: '', slug: '', description: '' });
+        setParentId(null);
     };
 
     return (
@@ -39,33 +48,63 @@ const CreateCategory: React.FC<Props> = ({ handleCreate, categoryData, handleUpd
                 {categoryData ? 'Update Category' : 'Add New Category'}
             </h3>
             <div className="space-y-4">
-                {(['name', 'slug', 'description'] as const).map((field) => (
-                    <div key={field}>
-                        <label className="block text-sm font-medium mb-1 capitalize">{field}</label>
-                        {field === 'description' ? (
-                            <textarea
-                                name={field}
-                                value={formData[field]}
-                                onChange={handleChange}
-                                className="w-full p-2 border rounded bg-transparent"
-                                rows={3}
-                                placeholder="Description..."
-                            />
-                        ) : (
-                            <input
-                                name={field}
-                                value={formData[field]}
-                                onChange={handleChange}
-                                type="text"
-                                className="w-full p-2 border rounded bg-transparent"
-                                placeholder={field === 'slug' ? 'category-slug' : 'Category name'}
-                            />
-                        )}
-                    </div>
-                ))}
+                {/* Name, Slug, Description inputs (same as before) */}
+                <div>
+                    <label className="block text-sm font-medium mb-1 capitalize">Name</label>
+                    <input
+                        name="name"
+                        value={formData.name}
+                        onChange={handleChange}
+                        type="text"
+                        className="w-full p-2 border rounded bg-transparent"
+                        placeholder="Category name"
+                    />
+                </div>
+                <div>
+                    <label className="block text-sm font-medium mb-1 capitalize">Slug</label>
+                    <input
+                        name="slug"
+                        value={formData.slug}
+                        onChange={handleChange}
+                        type="text"
+                        className="w-full p-2 border rounded bg-transparent"
+                        placeholder="category-slug"
+                    />
+                </div>
+                <div>
+                    <label className="block text-sm font-medium mb-1 capitalize">Description</label>
+                    <textarea
+                        name="description"
+                        value={formData.description}
+                        onChange={handleChange}
+                        className="w-full p-2 border rounded bg-transparent"
+                        rows={3}
+                        placeholder="Description..."
+                    />
+                </div>
+                
+                {/* Parent Category Dropdown */}
+                <div>
+                    <label className="block text-sm font-medium mb-1 capitalize">Parent Category</label>
+                    <select
+                        name="parentId"
+                        value={parentId || ''}
+                        onChange={handleParentChange}
+                        className="w-full p-2 border border-white rounded bg-transparent"
+                    >
+                        <option value="" className='text-white'>-- None --</option>
+                        {categories.map((cat) => (
+                            // Prevent a category from being its own parent
+                            categoryData?._id !== cat._id && (
+                                <option key={cat._id} value={cat._id} className='text-gray-900'>{cat.name}</option>
+                            )
+                        ))}
+                    </select>
+                </div>
+
                 <button
                     onClick={handleSubmit}
-                    className="w-full bg-black text-white p-2 rounded hover:bg-gray-800"
+                    className="w-full bg-black text-white p-2 rounded hover:bg-white hover:text-black transition-all duration-400 cursor-pointer"
                 >
                     {categoryData ? 'Update Category' : 'Add Category'}
                 </button>

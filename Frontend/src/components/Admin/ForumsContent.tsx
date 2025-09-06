@@ -80,10 +80,10 @@ const ForumsContent = () => {
         <div>
             <div className="flex justify-between items-center mb-6">
                 <div>
-                    <h1 className="text-2xl font-bold">Posts</h1>
-                    <p className="text-gray-500">Manage your blog posts</p>
+                    <h1 className="text-2xl font-bold">Forums</h1>
+                    <p className="text-gray-500">Manage your forums</p>
                 </div>
-                <NavLink to={'/admin/posts/add-forum'}>
+                <NavLink to={'/admin/forums/add-forum'}>
                     <button className="flex items-center space-x-2 bg-black text-white px-4 py-2 rounded hover:bg-gray-800">
                         <Plus size={18} />
                         <span>Add New</span>
@@ -123,7 +123,7 @@ const ForumsContent = () => {
 
             <div className="mt-6 flex justify-between items-center">
                 <div className="text-sm text-gray-500">
-                    Showing 1-5 of 5 posts
+                    Showing 1-5 of 5 forums
                 </div>
                 <div className="flex space-x-2">
                     <button className="p-2 rounded border hover:bg-gray-100 dark:hover:bg-gray-800">

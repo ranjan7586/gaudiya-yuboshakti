@@ -1,33 +1,28 @@
 import mongoose, { Schema } from "mongoose";
 
-interface ICategory {
+interface ITag {
     _id: string;
     name: string;
     slug: string;
     description?: string;
-    parentId?: string; // Add the parentId field
     createdAt: Date;
     updatedAt: Date;
     deletedAt?: Date;
 }
 
-const categorySchema: Schema = new mongoose.Schema<ICategory>({
+const tagSchema: Schema = new mongoose.Schema<ITag>({
     name: {
         type: String,
-        required: true
+        required: true,
+        unique: true
     },
     slug: {
         type: String,
-        required: true
+        required: true,
+        unique: true
     },
     description: {
         type: String,
-        required: false
-    },
-    parentId: { // Define the parentId field
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Category',
-        default: null,
         required: false
     },
     deletedAt: {
@@ -38,4 +33,4 @@ const categorySchema: Schema = new mongoose.Schema<ICategory>({
     timestamps: true
 });
 
-export default mongoose.model<ICategory>("Category", categorySchema);
+export default mongoose.model<ITag>("Tag", tagSchema);

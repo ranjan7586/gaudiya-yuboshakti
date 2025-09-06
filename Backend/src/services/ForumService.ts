@@ -1,4 +1,5 @@
 import Forum from "../models/Forum";
+import { uploadToCloudinary } from "../utils/cloudinary";
 
 class ForumService {
     async getForums(page: number, display_per_page: number, sort_by: string, sort_order: any) {
@@ -8,7 +9,12 @@ class ForumService {
     }
 
     async createForum(data: any) {
-        const forum = await Forum.create(data);
+        if (data?.file) {
+            const result = await uploadToCloudinary(data.file);
+            data.body.thumbnail_img = result.url;
+            console.log(result);
+        }
+        const forum = await Forum.create(data.body);
         return forum;
     }
 
@@ -18,6 +24,11 @@ class ForumService {
     }
 
     async updateForum(data: any) {
+        if (data?.file) {
+            const result = await uploadToCloudinary(data.file);
+            data.body.thumbnail_img = result.url;
+            console.log(result);
+        }
         const forum = await Forum.findOneAndUpdate({ _id: data.params.id }, data.body, { new: true });
         return forum;
     }

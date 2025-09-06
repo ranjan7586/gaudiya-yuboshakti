@@ -1,15 +1,15 @@
 import { Request, Response } from "express";
-import CategoryService from "../services/CategoryService";
+import TagService from "../services/TagService";
 
-class CategoryController {
+class TagController {
     async index(req: Request, res: Response) {
         try {
             const page = req.body?.page || 1;
             const sort_by = req.body?.sort_by || 'date';
             const sort_order = req.body?.sort_order || 'desc';
             const display_per_page = req.body?.display_per_page || 10;
-            const result = await CategoryService.getCategories(page, display_per_page, sort_by, sort_order);
-            return res.status(200).json({ message: 'Categories fetched successfully', data: result });
+            const result = await TagService.getTags(page, display_per_page, sort_by, sort_order);
+            return res.status(200).json({ message: 'Tags fetched successfully', data: result });
         } catch (error) {
             return res.status(500).json({ message: error instanceof Error ? error.message : 'Unknown server error' });
         }
@@ -23,8 +23,8 @@ class CategoryController {
             if (missing_fields.length > 0) {
                 return res.status(400).json({ message: `Missing required fields: ${missing_fields.join(', ')}` });
             }
-            const result = await CategoryService.createCategory(req.body);
-            return res.status(200).json({ message: 'Category created successfully', data: result });
+            const result = await TagService.createTag(req.body);
+            return res.status(200).json({ message: 'Tag created successfully', data: result });
         } catch (error) {
             return res.status(500).json({ message: error instanceof Error ? error.message : 'Unknown server error' });
         }
@@ -32,11 +32,11 @@ class CategoryController {
 
     async show(req: Request, res: Response) {
         try {
-            const result = await CategoryService.getCategoryById(req.params.id);
+            const result = await TagService.getTagById(req.params.id);
             if (!result) {
-                return res.status(404).json({ message: 'Category not found' });
+                return res.status(404).json({ message: 'Tag not found' });
             }
-            return res.status(200).json({ message: 'Category fetched successfully', data: result });
+            return res.status(200).json({ message: 'Tag fetched successfully', data: result });
         } catch (error) {
             return res.status(500).json({ message: error instanceof Error ? error.message : 'Unknown server error' });
         }
@@ -50,11 +50,11 @@ class CategoryController {
             if (missing_fields.length > 0) {
                 return res.status(400).json({ message: `Missing required fields: ${missing_fields.join(', ')}` });
             }
-            const result = await CategoryService.updateCategory(req);
+            const result = await TagService.updateTag(req);
             if (!result) {
-                return res.status(404).json({ message: 'Category not found or invalid parentId.' });
+                return res.status(404).json({ message: 'Tag not found' });
             }
-            return res.status(200).json({ message: 'Category updated successfully', data: result });
+            return res.status(200).json({ message: 'Tag updated successfully', data: result });
         } catch (error) {
             return res.status(500).json({ message: error instanceof Error ? error.message : 'Unknown server error' });
         }
@@ -62,15 +62,15 @@ class CategoryController {
 
     async delete(req: Request, res: Response) {
         try {
-            const result = await CategoryService.deleteCategory(req.params.id);
+            const result = await TagService.deleteTag(req.params.id);
             if (!result) {
-                return res.status(404).json({ message: 'Category not found' });
+                return res.status(404).json({ message: 'Tag not found' });
             }
-            return res.status(200).json({ message: 'Category and its subcategories deleted successfully', data: true });
+            return res.status(200).json({ message: 'Tag deleted successfully', data: true });
         } catch (error) {
             return res.status(500).json({ message: error instanceof Error ? error.message : 'Unknown server error' });
         }
     }
 }
 
-export default new CategoryController();
+export default new TagController();

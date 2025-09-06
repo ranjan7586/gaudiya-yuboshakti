@@ -1,6 +1,7 @@
 import cors from 'cors';
 import dotenv from 'dotenv';
 import connectDB from './DB/conn';
+import TagRouter from './routes/tag';
 import AuthRouter from './routes/auth';
 import NewsRouter from './routes/blog';
 import ForumRouter from './routes/forum';
@@ -27,6 +28,7 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 connectDB();
+app.use('/api/v1/tags',TagRouter);
 app.use('/api/v1/blog', NewsRouter);
 app.use('/api/v1/auth', AuthRouter);
 app.use('/api/v1/forums', ForumRouter);

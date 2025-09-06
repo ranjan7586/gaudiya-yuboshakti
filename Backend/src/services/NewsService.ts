@@ -17,7 +17,7 @@ class NewsService {
             data.body.thumbnail_img = result.url;
             console.log(result);
         }
-        // data.body.author = data.body?.auth_user?.id;
+        // The News.create method will now correctly handle the 'categories' array.
         const result = await News.create(data.body);
         return result;
     }
@@ -25,11 +25,23 @@ class NewsService {
     async getNews(page: number, display_per_page: number, sort_by: string, sort_order: any, filter_by: any, filter_type: string) {
         sort_order = sort_order === 'asc' ? 1 : -1;
         if (filter_type && filter_by) {
-            if(filter_type === 'category') filter_by = (await Category.findOne({ name: filter_by }).select('_id'))?._id ; 
-            const result = await News.find({ [filter_type]: filter_by, deletedAt: null }).populate('author', ['name', 'profileImage']).populate('category', 'name').sort({ [sort_by]: sort_order }).skip((page - 1) * display_per_page).limit(display_per_page);
+            if(filter_type === 'category') filter_by = (await Category.findOne({ name: filter_by }).select('_id'))?._id;
+            // Updated populate to use 'categories' (plural)
+            const result = await News.find({ [filter_type]: filter_by, deletedAt: null })
+                .populate('author', ['name', 'profileImage'])
+                .populate('categories', 'name')
+                .sort({ [sort_by]: sort_order })
+                .skip((page - 1) * display_per_page)
+                .limit(display_per_page);
             return result;
         }
-        const result = await News.find({ deletedAt: null }).populate('author', ['name', 'profileImage']).populate('category', 'name').sort({ [sort_by]: sort_order }).skip((page - 1) * display_per_page).limit(display_per_page);
+        // Updated populate to use 'categories' (plural)
+        const result = await News.find({ deletedAt: null })
+            .populate('author', ['name', 'profileImage'])
+            .populate('categories', 'name')
+            .sort({ [sort_by]: sort_order })
+            .skip((page - 1) * display_per_page)
+            .limit(display_per_page);
         return result;
     }
 
@@ -39,6 +51,7 @@ class NewsService {
             data.body.thumbnail_img = result.url;
             console.log(result);
         }
+        // The findOneAndUpdate method will correctly handle the 'categories' array.
         const result = await News.findOneAndUpdate({ _id: data.params.id }, data.body, { new: true });
         return result;
     }
@@ -49,7 +62,10 @@ class NewsService {
     }
 
     async getNewsById(id: string) {
-        const result = await News.findOne({ _id: id }).populate('author', ['name', 'profileImage']).populate('category', 'name');
+        // Updated populate to use 'categories' (plural)
+        const result = await News.findOne({ _id: id })
+            .populate('author', ['name', 'profileImage'])
+            .populate('categories', 'name');
         return result;
     }
 }
