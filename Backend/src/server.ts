@@ -4,8 +4,10 @@ import connectDB from './DB/conn';
 import TagRouter from './routes/tag';
 import AuthRouter from './routes/auth';
 import NewsRouter from './routes/blog';
+import VideoRouter from './routes/video';
 import ForumRouter from './routes/forum';
 import UploadRouter from './routes/upload';
+import ContactRouter from './routes/contact';
 import CategoryRouter from './routes/category';
 import express, { Request, Response } from 'express';
 
@@ -33,6 +35,8 @@ app.use('/api/v1/blog', NewsRouter);
 app.use('/api/v1/auth', AuthRouter);
 app.use('/api/v1/forums', ForumRouter);
 app.use('/api/v1/upload', UploadRouter);
+app.use('/api/v1/videos',VideoRouter);
+app.use('/api/v1/contact',ContactRouter);
 app.use('/api/v1/categories',CategoryRouter);
 app.get('/api/v1', (_req: Request, res: Response) => {
     res.send('Server is running - api-v1!');

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 import {
     Facebook,
     Twitter,
@@ -25,7 +26,7 @@ const ContactUs = () => {
         isSubmitted: false
     });
 
-    const handleChange = (e: any) => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
         setFormData(prev => ({
             ...prev,
@@ -33,7 +34,7 @@ const ContactUs = () => {
         }));
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
         // Form validation
@@ -46,26 +47,43 @@ const ContactUs = () => {
             return;
         }
 
-        // In a real app, you'd send the form data to your backend here
-        console.log('Form submitted:', formData);
+        try {
+            const { data } = await axios.post(
+                `${import.meta.env.VITE_BACKEND_URL}/api/v1/contact/create`,
+                formData
+            );
 
-        // Simulate successful submission
-        setFormStatus({
-            message: 'Thank you for your message! We will get back to you soon.',
-            isError: false,
-            isSubmitted: true
-        });
+            if (data.success) {
+                setFormStatus({
+                    message: '✅ Thank you for your message! We will get back to you soon.',
+                    isError: false,
+                    isSubmitted: true
+                });
 
-        // Reset form
-        setFormData({
-            name: '',
-            email: '',
-            subject: '',
-            message: ''
-        });
+                setFormData({
+                    name: '',
+                    email: '',
+                    subject: '',
+                    message: ''
+                });
+            } else {
+                setFormStatus({
+                    message: data.message || 'Something went wrong. Please try again.',
+                    isError: true,
+                    isSubmitted: false
+                });
+            }
+        } catch (error: any) {
+            console.error(error);
+            setFormStatus({
+                message: error.response?.data?.message || 'Server error. Please try again later.',
+                isError: true,
+                isSubmitted: false
+            });
+        }
     };
 
-    // Social media data with icons and links
+    // Social media data
     const socialMedia = [
         { name: 'Facebook', icon: <Facebook className="w-6 h-6" />, color: 'bg-blue-600' },
         { name: 'Twitter', icon: <Twitter className="w-6 h-6" />, color: 'bg-blue-400' },
@@ -94,7 +112,6 @@ const ContactUs = () => {
                     <div className="w-full lg:w-2/5">
                         <div className="bg-white rounded-xl shadow-lg p-8">
                             <h3 className="text-2xl font-semibold text-gray-800 mb-6">Connect With Us</h3>
-
                             <div className="grid grid-cols-3 gap-4">
                                 {socialMedia.map((social, index) => (
                                     <a
@@ -107,21 +124,6 @@ const ContactUs = () => {
                                     </a>
                                 ))}
                             </div>
-
-                            <div className="mt-8 space-y-4">
-                                <div className="flex items-center">
-                                    <Mail className="w-5 h-5 text-indigo-600 mr-3" />
-                                    <span className="text-gray-700">contact@example.com</span>
-                                </div>
-                                <div className="flex items-center">
-                                    <Phone className="w-5 h-5 text-indigo-600 mr-3" />
-                                    <span className="text-gray-700">+1 (555) 123-4567</span>
-                                </div>
-                                <div className="flex items-center">
-                                    <Globe className="w-5 h-5 text-indigo-600 mr-3" />
-                                    <span className="text-gray-700">www.example.com</span>
-                                </div>
-                            </div>
                         </div>
                     </div>
 
@@ -130,17 +132,18 @@ const ContactUs = () => {
                         <div className="bg-white rounded-xl shadow-lg p-8">
                             <h3 className="text-2xl font-semibold text-gray-800 mb-6">Send Us a Message</h3>
 
-                            {formStatus.isSubmitted ? (
-                                <div className="bg-green-50 border border-green-200 text-green-700 p-4 rounded-lg mb-6">
+                            {formStatus.message && (
+                                <div
+                                    className={`p-4 rounded-lg mb-6 ${formStatus.isError
+                                            ? 'bg-red-50 border border-red-200 text-red-700'
+                                            : 'bg-green-50 border border-green-200 text-green-700'
+                                        }`}
+                                >
                                     {formStatus.message}
                                 </div>
-                            ) : formStatus.message ? (
-                                <div className="bg-red-50 border border-red-200 text-red-700 p-4 rounded-lg mb-6">
-                                    {formStatus.message}
-                                </div>
-                            ) : null}
+                            )}
 
-                            <div className="space-y-6">
+                            <form onSubmit={handleSubmit} className="space-y-6">
                                 <div>
                                     <label htmlFor="name" className="block text-gray-700 font-medium mb-2">
                                         Your Name <span className="text-red-500">*</span>
@@ -202,12 +205,12 @@ const ContactUs = () => {
                                 </div>
 
                                 <button
-                                    onClick={handleSubmit}
+                                    type="submit"
                                     className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 px-6 rounded-lg transition-colors duration-300 flex items-center justify-center"
                                 >
                                     Send Message
                                 </button>
-                            </div>
+                            </form>
                         </div>
                     </div>
                 </div>

@@ -1,6 +1,6 @@
 import React from 'react'
 import SidebarItem from './SidebarItem';
-import { Menu, X, Settings, Home, Users, Tag, Grid, FileText, LogOut, Moon, FormInput } from 'lucide-react';
+import { Menu, X, Settings, Home, Users, Tag, FileText, LogOut, Moon, FormInput, Video, Type } from 'lucide-react';
 import { NavLink, useNavigate } from 'react-router-dom';
 
 type Props = {
@@ -53,7 +53,7 @@ const AdminSidebar = ({ sidebarOpen, currentPage, setCurrentPage, darkMode, setD
                     </NavLink>
                     <NavLink to={'/admin/categories'}>
                         <SidebarItem
-                            icon={<Tag size={20} />}
+                            icon={<Type size={20} />}
                             label="Categories"
                             isOpen={sidebarOpen}
                             onClick={() => setCurrentPage('categories')}
@@ -81,13 +81,13 @@ const AdminSidebar = ({ sidebarOpen, currentPage, setCurrentPage, darkMode, setD
                             darkMode={darkMode}
                         />
                     </NavLink>
-                    <NavLink to={'/admin/types'}>
+                    <NavLink to={'/admin/videos'}>
                         <SidebarItem
-                            icon={<Grid size={20} />}
-                            label="Post Types"
+                            icon={<Video size={20} />}
+                            label="Videos"
                             isOpen={sidebarOpen}
-                            onClick={() => setCurrentPage('types')}
-                            isActive={currentPage === 'types'}
+                            onClick={() => setCurrentPage('videos')}
+                            isActive={currentPage === 'videos'}
                             darkMode={darkMode}
                         />
                     </NavLink>

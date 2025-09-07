@@ -1,148 +1,146 @@
-import { useState } from 'react';
-import { Mail, Facebook, Twitter, Linkedin, Share2, ArrowUp } from 'lucide-react';
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { Link } from "react-router-dom";
+import { ArrowUp } from "lucide-react";
 
-const FeaturedVideos: React.FC = () => {
+interface Video {
+    _id: string;
+    title: string;
+    description: string;
+    youtubeUrl: string;
+    categories: { _id: string; name: string }[];
+    date: string;
+}
+
+interface FeaturedVideosProps {
+    mode: "home" | "page";
+}
+
+const FeaturedVideos: React.FC<FeaturedVideosProps> = ({ mode }) => {
+    const [videos, setVideos] = useState<Video[]>([]);
+    const [page, setPage] = useState(1);
+    const [total, setTotal] = useState(0);
     const [showScrollToTop, setShowScrollToTop] = useState(false);
 
-    // Sample video data
-    const videos = [
-        {
-            id: 1,
-            title: 'From Delhi to the North Pole: Asia\'s Arctic Strategy Explained',
-            thumbnail: '/api/placeholder/480/270',
-            src:'https://www.youtube.com/embed/IDWimszNZB4?si=YoW6KhhayOlYuesx',
-            category: 'Geopolitics',
-            date: 'May 09, 2025'
-        },
-        {
-            id: 2,
-            title: 'भारत-पाकिस्तान विशेष!',
-            thumbnail: '/api/placeholder/480/270',
-            src:'https://www.youtube.com/embed/zZJFozFsnIU?si=v6I_Snf655Q_aTwj',
-            category: 'Neighbourhood',
-            date: 'May 09, 2025'
-        },
-        {
-            id: 3,
-            title: 'Is the Arctic the Final Frontier for the Space Economy?',
-            thumbnail: '/api/placeholder/480/270',
-            src:'https://www.youtube.com/embed/qRdHKmj4-iE?si=KIT46PU8TJJNcruW',
-            category: 'Science & Strategy',
-            date: 'May 09, 2025'
-        },
-        {
-            id: 4,
-            title: 'Geopolitics, Ice & Innovation: The Arctic\'s Global Future Begins in India',
-            thumbnail: '/api/placeholder/480/270',
-            src:'https://youtube.com/embed/h_fdPgjp4bI?si=Pyb9xcJYH_ShPhqP',
-            category: 'Global Affairs',
-            date: 'May 08, 2025'
-        },
-        {
-            id: 5,
-            title: 'Arctic Vision from the Indian Parliament',
-            thumbnail: '/api/placeholder/480/270',
-            src:'https://youtube.com/embed/7EoUwVVTLE4?si=DDsywDzBzR5d1JgL',
-            category: 'Politics',
-            date: 'May 08, 2025'
-        },
-        {
-            id: 6,
-            title: 'Partners not Preachers: Dr. S Jaishankar on EU',
-            thumbnail: '/api/placeholder/480/270',
-            src:'https://youtube.com/embed/XmGO4O2vpJw?si=PLdyeEmIFk8QmH2w',
-            category: 'Diplomacy',
-            date: 'May 06, 2025'
-        }
-    ];
+    const displayPerPage = mode === "home" ? 6 : 9;
 
-    // Handle scroll event to show/hide the scroll-to-top button
-    const handleScroll = () => {
-        if (window.scrollY > 300) {
-            setShowScrollToTop(true);
-        } else {
-            setShowScrollToTop(false);
+    const fetchVideos = async (reset = false) => {
+        try {
+            const { data } = await axios.post(
+                `${import.meta.env.VITE_BACKEND_URL}/api/v1/videos/list`,
+                {
+                    page,
+                    display_per_page: displayPerPage,
+                    sort_by: "createdAt",
+                    sort_order: "desc",
+                }
+            );
+
+            if (reset) {
+                setVideos(data.data);
+            } else {
+                setVideos((prev) => [...prev, ...data.data]);
+            }
+
+            setTotal(data.total || 0);
+        } catch (error) {
+            console.error("Error fetching videos:", error);
         }
     };
 
-    // Add scroll event listener
-    if (typeof window !== 'undefined') {
-        window.addEventListener('scroll', handleScroll);
-    }
+    useEffect(() => {
+        fetchVideos(true);
+    }, []);
 
-    // Function to scroll to top
+    useEffect(() => {
+        if (page > 1) fetchVideos();
+    }, [page]);
+
+    // scroll-to-top
+    useEffect(() => {
+        const handleScroll = () => {
+            setShowScrollToTop(window.scrollY > 300);
+        };
+
+        window.addEventListener("scroll", handleScroll);
+        return () => window.removeEventListener("scroll", handleScroll);
+    }, []);
+
+    const loadMore = () => {
+        if (videos.length < total) {
+            setPage((prev) => prev + 1);
+        }
+    };
+
     const scrollToTop = () => {
-        window.scrollTo({
-            top: 0,
-            behavior: 'smooth'
-        });
+        window.scrollTo({ top: 0, behavior: "smooth" });
     };
 
     return (
-        <div className="min-h-screen bg-gray-50">
-            {/* Main Content */}
+        <div className={`min-h-screen bg-gray-50`}>
             <div className="container mx-auto px-4 py-8">
-                <h1 className="text-4xl font-bold text-gray-900 mb-2">Latest Videos</h1>
+                <h1 className="text-4xl font-bold text-gray-900 mb-2">Featured Videos</h1>
                 <div className="w-24 h-1 bg-yellow-400 mb-8"></div>
 
                 {/* Video Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
-                    {videos.map((video) => (
-                        <div key={video.id} className="bg-white rounded shadow-md overflow-hidden hover:shadow-lg transition duration-300">
-                            {/* Video Thumbnail with Play Button */}
+                    {(mode === "home" ? videos.slice(0, 6) : videos).map((video) => (
+                        <Link
+                            key={video._id}
+                            to={`/videos/${video._id}`}
+                            className="bg-white rounded shadow-md overflow-hidden hover:shadow-lg transition duration-300"
+                        >
                             <div className="relative">
-                                {/* <img
-                                    src={video.thumbnail}
-                                    alt={video.title}
-                                    className="w-full h-48 object-cover"
-                                /> */}
-                                <iframe className='w-full h-48' src={video.src}></iframe>
-                                {/* <div className="absolute inset-0 flex items-center justify-center">
-                                    <button className="bg-white bg-opacity-80 rounded-full p-8 hover:bg-opacity-100 transition duration-300 z-0">
-                                        <div className="w-0 h-0 border-t-8 border-t-transparent border-l-16 border-l-blue-600 border-b-8 border-b-transparent ml-1"></div>
-                                    </button>
-                                </div> */}
-                                {video.category && (
+                                <iframe
+                                    className="w-full h-48"
+                                    src={video.youtubeUrl}
+                                    title={video.title}
+                                    allowFullScreen
+                                ></iframe>
+                                {video.categories?.length > 0 && (
                                     <span className="absolute top-2 left-2 bg-blue-600 text-white text-xs px-2 py-1 rounded">
-                                        {video.category}
+                                        {video.categories.map((c) => c.name).join(", ")}
                                     </span>
                                 )}
                             </div>
-
-                            {/* Video Details */}
                             <div className="p-4">
                                 <h2 className="text-lg font-semibold mb-2 line-clamp-2 hover:text-blue-600 transition duration-300">
                                     {video.title}
                                 </h2>
-
-                                {/* Social Share Icons and Date */}
-                                <div className="flex items-center justify-between mt-4">
-                                    <div className="flex items-center space-x-2">
-                                        <button className="text-gray-600 hover:text-blue-600 transition duration-300">
-                                            <Mail size={16} />
-                                        </button>
-                                        <button className="text-gray-600 hover:text-blue-600 transition duration-300">
-                                            <Facebook size={16} />
-                                        </button>
-                                        <button className="text-gray-600 hover:text-blue-600 transition duration-300">
-                                            <Twitter size={16} />
-                                        </button>
-                                        <button className="text-gray-600 hover:text-blue-600 transition duration-300">
-                                            <Linkedin size={16} />
-                                        </button>
-                                        <button className="text-gray-600 hover:text-blue-600 transition duration-300">
-                                            <Share2 size={16} />
-                                        </button>
-                                    </div>
-                                    <span className="text-xs text-gray-500">{video.date}</span>
-                                </div>
+                                <span className="text-xs text-gray-500">
+                                    {new Date(video.date).toLocaleDateString()}
+                                </span>
                             </div>
-                        </div>
+                        </Link>
                     ))}
                 </div>
+
+                {/* Load More for listing page */}
+                {mode === "page" && videos.length < total && (
+                    <div className="text-center">
+                        <button
+                            onClick={loadMore}
+                            className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-medium transition-colors"
+                        >
+                            Load More
+                        </button>
+                    </div>
+                )}
+
+                {/* View All for home */}
+                {mode === "home" && (
+                    <div className="text-center">
+                        <Link
+                            to="/videos"
+                            className="inline-block bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-medium transition-colors"
+                        >
+                            VIEW ALL
+                        </Link>
+                    </div>
+                )}
             </div>
 
-            {/* Scroll to Top Button */}
+            {/* Scroll to Top */}
             {showScrollToTop && (
                 <button
                     onClick={scrollToTop}

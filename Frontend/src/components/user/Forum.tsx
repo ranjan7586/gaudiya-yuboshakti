@@ -1,6 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { ArrowLeft, Calendar, MapPin, Users } from 'lucide-react';
+import { ArrowLeft, Calendar } from 'lucide-react';
 import axios from 'axios';
+import { Link } from 'react-router-dom';
+// import Footer from './Footer';
+// import Header from './Header';
+interface ForumAppProps {
+    mode: "home" | "page";
+}
 
 interface Forum {
     _id: number;
@@ -84,10 +90,17 @@ interface Forum {
 // ];
 
 
-const ForumApp: React.FC = () => {
+const ForumApp: React.FC<ForumAppProps> = ({ mode }) => {
     const [selectedForum, setSelectedForum] = useState<Forum | null>(null);
-    const [visibleCount, setVisibleCount] = useState(6);
+    // const [visibleCount, setVisibleCount] = useState(6);
     const [forumsData, setForumsData] = useState<Forum[]>([]);
+
+    const [page, setPage] = useState(1);
+    const [total, setTotal] = useState(0);
+    const [search] = useState("");
+
+    const displayPerPage = mode === "home" ? 6 : 9;
+
 
     const handleForumClick = (forum: Forum) => {
         setSelectedForum(forum);
@@ -97,23 +110,47 @@ const ForumApp: React.FC = () => {
         setSelectedForum(null);
     };
 
-    const loadMore = () => {
-        setVisibleCount(prev => Math.min(prev + 6, forumsData.length));
+    // const loadMore = () => {
+    //     setVisibleCount(prev => Math.min(prev + 6, forumsData.length));
+    // };
+
+
+    const fetchForums = async (reset = false) => {
+        try {
+            const { data } = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/v1/forums/list`, {
+                page,
+                display_per_page: displayPerPage,
+                sort_by: "date",
+                sort_order: "desc",
+                search
+            });
+            if (reset) {
+                console.log("enter if")
+                setForumsData(data.data);
+            } else {
+                console.log("enter else")
+                setForumsData(prev => [...prev, ...data.data]);
+                console.log(forumsData)
+            }
+            setTotal(data.total);
+        } catch (error) {
+            console.log(error);
+        }
     };
 
-    const fetchForums = async () => {
-    try {
-        const { data } = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/v1/forums/list`);
-        console.log(data)
-        setForumsData(data.data);
-    } catch (error) {
-        console.log(error)
-    }
-}
+    useEffect(() => {
+        fetchForums(true);
+    }, [search]);
+
+    const loadMore = () => {
+        if (forumsData.length < total) {
+            setPage(prev => prev + 1);
+        }
+    };
 
     useEffect(() => {
-        fetchForums();
-    }, []);
+        if (page > 1) fetchForums();
+    }, [page]);
 
 
     if (selectedForum) {
@@ -175,7 +212,7 @@ const ForumApp: React.FC = () => {
                             <div className="prose max-w-none">
                                 <h2 className="text-xl font-semibold mb-4 text-gray-900">About This Forum</h2>
                                 <p className="text-gray-700 leading-relaxed text-lg">
-                                    {selectedForum.description.substring(0,200)}
+                                    {selectedForum.description.substring(0, 200)}
                                 </p>
                             </div>
 
@@ -192,57 +229,78 @@ const ForumApp: React.FC = () => {
     }
 
     return (
-        <div className="min-h-screen bg-gray-50">
-            <div className="container mx-auto px-4 py-8">
-                <div className="mb-8">
-                    <h1 className="text-4xl font-bold text-gray-900 mb-2">Forums</h1>
-                    <div className="w-20 h-1 bg-yellow-400"></div>
-                </div>
+        <>
+            {/* {mode === 'page' &&
+                <Header />
+            } */}
+            <div className={`mb-20 bg-gray-50`}>
+                <div className="container mx-auto px-4 py-8">
+                    <div className="mb-8">
+                        <h1 className="text-4xl font-bold text-gray-900 mb-2">Forums</h1>
+                        <div className="w-20 h-1 bg-yellow-400"></div>
+                    </div>
 
-                <div className="grid md:grid-cols-2 gap-8">
-                    {forumsData && forumsData.slice(0, visibleCount).map((forum) => (
-                        <div
-                            key={forum._id}
-                            onClick={() => handleForumClick(forum)}
-                            className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow cursor-pointer overflow-hidden"
-                        >
-                            <div className="flex gap-4 p-6">
-                                <div className="flex-shrink-0">
-                                    <img
-                                        src={forum.thumbnail_img}
-                                        alt={forum.title}
-                                        className="w-20 h-20 object-cover rounded-lg"
-                                    />
-                                </div>
-                                <div className="flex-1">
-                                    <h3 className="text-xl font-bold text-gray-900 mb-3 hover:text-blue-600 transition-colors">
-                                        {forum.title}
-                                    </h3>
-                                    <p className="text-gray-600 text-sm leading-relaxed"
-                                        dangerouslySetInnerHTML={{__html: forum.description.substring(0,200) || ''}} />
-                                    <div className="mt-3">
-                                        <span className="inline-block px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded">
-                                            {forum.tags}
-                                        </span>
+                    <div className="grid md:grid-cols-2 gap-8">
+                        {forumsData && forumsData.map((forum) => (
+                            <div
+                                key={forum._id}
+                                onClick={() => handleForumClick(forum)}
+                                className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow cursor-pointer overflow-hidden"
+                            >
+                                <div className="flex gap-4 p-6">
+                                    <div className="flex-shrink-0">
+                                        <img
+                                            src={forum.thumbnail_img}
+                                            alt={forum.title}
+                                            className="w-20 h-20 object-cover rounded-lg"
+                                        />
+                                    </div>
+                                    <div className="flex-1">
+                                        <h3 className="text-xl font-bold text-gray-900 mb-3 hover:text-blue-600 transition-colors">
+                                            {forum.title}
+                                        </h3>
+                                        <p className="text-gray-600 text-sm leading-relaxed"
+                                            dangerouslySetInnerHTML={{ __html: forum.description.substring(0, 200) || '' }} />
+                                        <div className="mt-3">
+                                            <span className="inline-block px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded">
+                                                {forum.tags}
+                                            </span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    ))}
-                </div>
-
-                {visibleCount < forumsData.length && (
-                    <div className="text-center mt-12">
-                        <button
-                            onClick={loadMore}
-                            className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-medium transition-colors"
-                        >
-                            VIEW MORE
-                        </button>
+                        ))}
                     </div>
-                )}
+
+                    {mode === "home" ? (
+                        <div className="text-center mt-12">
+                            <Link
+                                to="/forum"
+                                className="inline-block bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-medium transition-colors cursor-pointer"
+                            >
+                                VIEW ALL
+                            </Link>
+                        </div>
+                    ) : (
+                        forumsData.length < total && (
+                            <div className="text-center mt-12">
+                                <button
+                                    onClick={loadMore}
+                                    className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-medium transition-colors cursor-pointer"
+                                >
+                                    LOAD MORE
+                                </button>
+                            </div>
+                        )
+                    )}
+
+                </div>
             </div>
-        </div>
+            {/* {mode === 'page' &&
+                <Footer />
+            } */}
+        </>
+
     );
 };
 

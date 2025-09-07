@@ -2,11 +2,27 @@ import Forum from "../models/Forum";
 import { uploadToCloudinary } from "../utils/cloudinary";
 
 class ForumService {
-    async getForums(page: number, display_per_page: number, sort_by: string, sort_order: any) {
+    async getForums(page: number, display_per_page: number, sort_by: string, sort_order: any, search: string) {
         sort_order = sort_order === 'asc' ? 1 : -1;
-        const forums = await Forum.find({ deletedAt: null }).populate('author', ['name', 'profileImage']).sort({ [sort_by]: sort_order }).skip((page - 1) * display_per_page).limit(display_per_page);
-        return forums;
+
+        const filter: any = { deletedAt: null };
+        if (search) {
+            filter.$or = [
+                { title: { $regex: search, $options: 'i' } },
+                { description: { $regex: search, $options: 'i' } }
+            ];
+        }
+        console.log(page, display_per_page)
+        const total = await Forum.find(filter).countDocuments(filter);
+        const forums = await Forum.find(filter)
+            .populate('author', ['name', 'profileImage'])
+            .sort({ [sort_by]: sort_order, _id: 1 }) // secondary sort by _id
+            .skip((page - 1) * display_per_page)
+            .limit(display_per_page);
+
+        return { forums, total };
     }
+
 
     async createForum(data: any) {
         if (data?.file) {

@@ -24,7 +24,10 @@ interface Post {
   description: string;
   thumbnail_img: string;
   category: any;
-  tags: string[];
+  tags: {
+    _id:string,
+    name:string
+  }[];
   date: string;
   readTime: string;
   author: Author;
@@ -156,10 +159,10 @@ export default function BlogDetails() {
               {post?.tags.map((tag, index) => (
                 <a
                   key={index}
-                  href={`/blog/tag/${tag.toLowerCase()}`}
+                  href={`/blog/tag/${tag?.name.toLowerCase()}`}
                   className="bg-gray-100 hover:bg-gray-200 text-gray-800 px-3 py-1 rounded-full text-sm"
                 >
-                  {tag}
+                  {tag?.name}
                 </a>
               ))}
             </div>

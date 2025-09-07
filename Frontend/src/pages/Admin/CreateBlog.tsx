@@ -24,6 +24,13 @@ type Category = {
   };
 }
 
+type Tag = {
+  _id: string,
+  name: string,
+  slug: string,
+  description: string
+}
+
 interface CreateBlogProps {
   is_update?: boolean
 }
@@ -54,6 +61,7 @@ const CreateBlog: React.FC<CreateBlogProps> = ({ is_update = false }: CreateBlog
   const { id } = useParams<{ id: string }>();
   const [users, setUsers] = useState<User[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [tags, setTags] = useState<Tag[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
@@ -67,7 +75,7 @@ const CreateBlog: React.FC<CreateBlogProps> = ({ is_update = false }: CreateBlog
             description: data.data.description,
             // Extracting IDs from the array of category objects
             categories: data.data.categories.map((cat: { _id: string }) => cat._id),
-            tags: data.data.tags,
+            tags: data.data.tags.map((tag: { _id: string }) => tag._id),
             author: data.data.author?._id,
             date: data.data.date,
             readTime: data.data.readTime,
@@ -94,6 +102,14 @@ const CreateBlog: React.FC<CreateBlogProps> = ({ is_update = false }: CreateBlog
     try {
       const { data } = await axiosAuth.post(`${import.meta.env.VITE_BACKEND_URL}/api/v1/categories/list`);
       if (data.data) setCategories(data.data);
+    } catch (error) {
+      console.error("Failed to fetch categories:", error);
+    }
+  }
+  const fetchTags = async () => {
+    try {
+      const { data } = await axiosAuth.post(`${import.meta.env.VITE_BACKEND_URL}/api/v1/tags/list`);
+      if (data.data) setTags(data.data);
     } catch (error) {
       console.error("Failed to fetch categories:", error);
     }
@@ -193,6 +209,7 @@ const CreateBlog: React.FC<CreateBlogProps> = ({ is_update = false }: CreateBlog
   };
 
   useEffect(() => {
+    fetchTags();
     fetchUsers();
     fetchCategories();
   }, []);
@@ -317,17 +334,17 @@ const CreateBlog: React.FC<CreateBlogProps> = ({ is_update = false }: CreateBlog
                   <h3 className="font-medium text-gray-700">Tags</h3>
                 </div>
                 <div className="p-4 space-y-2">
-                  {['featured', 'trending', 'popular', 'latest'].map((tag) => (
-                    <label key={tag} className="inline-flex items-center space-x-2">
+                  {tags && tags.map((tag) => (
+                    <label key={tag._id} className="inline-flex items-center space-x-2">
                       <input
                         type="checkbox"
                         name="tags"
-                        value={tag}
-                        checked={formData.tags.includes(tag)}
+                        value={tag._id}
+                        checked={formData.tags.includes(tag._id)}
                         onChange={handleTagChange}
                         className="form-checkbox h-4 w-4 text-blue-600 m-2"
                       />
-                      <span className="text-gray-700 capitalize">{tag}</span>
+                      <span className="text-gray-700 capitalize">{tag.name}</span>
                     </label>
                   ))}
                 </div>

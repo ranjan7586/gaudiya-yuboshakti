@@ -23,12 +23,19 @@ class ForumController {
             const sort_by = req.body?.sort_by || 'date';
             const sort_order = req.body?.sort_order || 'desc';
             const display_per_page = req.body?.display_per_page || 10;
-            const result = await ForumService.getForums(page, display_per_page, sort_by, sort_order);
-            return res.status(200).json({ message: 'Forums fetched successfully', data: result });
+            const search = req.body?.search || '';
+
+            const result = await ForumService.getForums(page, display_per_page, sort_by, sort_order, search);
+            return res.status(200).json({
+                message: 'Forums fetched successfully',
+                data: result.forums,
+                total: result.total
+            });
         } catch (error) {
             return res.status(500).json({ message: error instanceof Error ? error.message : 'Unknown error' });
         }
     }
+
 
     async update(req: Request, res: Response) {
         try {

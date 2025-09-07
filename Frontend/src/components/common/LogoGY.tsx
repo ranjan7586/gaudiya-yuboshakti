@@ -1,8 +1,8 @@
 import React, { useEffect, useRef } from 'react'
 
-type Props = {}
+// type Props = {}
 
-const LogoGY: React.FC = (props: Props) => {
+const LogoGY: React.FC = () => {
     const containerRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {

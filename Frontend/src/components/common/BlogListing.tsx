@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Mail, Facebook, Twitter, Link2, Linkedin, MessageCircle } from 'lucide-react';
-import Header from '../user/Header';
-import { Link, useNavigate, useParams } from 'react-router-dom';
-import Footer from '../user/Footer';
+// import Header from '../user/Header';
+import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
+// import Footer from '../user/Footer';
 import axios from 'axios';
 
 // Types for our blog data
@@ -14,7 +14,7 @@ interface BlogPost {
     _id: any;
     title: string;
     description: string;
-    category: any;
+    categories: any;
     date: string;
     thumbnail_img: string;
     author: any;
@@ -74,18 +74,30 @@ const BlogPostCard: React.FC<{ post: BlogPost }> = ({ post }) => {
                 />
             </div>
             <div className="w-2/3 flex flex-col">
-                <Link
-                    to={`/list/category/${post?.category?.name}`}
+                {/* <Link
+                    to={`/list/category/${post?.categories[1]?.name}`}
                     onClick={(e) => e.stopPropagation()}
                 >
-                    <div className="text-sm text-blue-600 font-medium mb-1">{post?.category?.name}</div>
-                </Link>
+                    <div className="text-sm text-blue-600 font-medium mb-1">{post?.categories[1]?.name}</div>
+                </Link> */}
                 <div className='flex justify-between'>
                     <SocialShareButtons />
                     <span className="text-orange-500 text-sm">{post.date}</span>
                 </div>
                 <h2 className="text-lg font-bold mb-2 hover:text-blue-600 cursor-pointer">{post.title}</h2>
                 <div className="text-gray-700 mb-4 text-sm"><div dangerouslySetInnerHTML={{ __html: post?.description.substring(0, 300) + '...' || '' }} />
+                </div>
+                <div className="my-2 flex flex-wrap gap-2">
+                    {post?.categories.map((category: any, index: number) => (
+                        <Link
+                            key={index}
+                            onClick={(e) => e.stopPropagation()}
+                            to={`/list/category/${category?.slug?.toLowerCase()}`}
+                            className="bg-gray-100 hover:bg-gray-200 text-gray-800 px-3 py-1 rounded-full text-sm"
+                        >
+                            {category?.name}
+                        </Link>
+                    ))}
                 </div>
                 <div className="mt-auto">
                     <div className="text-gray-500 text-sm uppercase font-semibold">
@@ -122,7 +134,13 @@ const ContributorCard: React.FC<{ contributor: Contributor }> = ({ contributor }
 // Main blog page component
 const BlogListing: React.FC = () => {
     const display_per_page = 5;
-    const { type, filter_type } = useParams();
+    const location = useLocation();
+    let { type, filter_type } = useParams();
+    const path = location.pathname.split("/").filter(Boolean).pop();
+    if (path === 'blog') {
+        type = 'blog';
+        filter_type = 'category';
+    }
     const [page, setPage] = useState(1);
     const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
     const [hasMore, setHasMore] = useState(true); // To indicate if there are more posts to load
@@ -175,8 +193,8 @@ const BlogListing: React.FC = () => {
 
     return (
         <>
-            <Header />
-            <div className='min-h-screen pt-64'>
+            {/* <Header /> */}
+            <div className='min-h-screen'>
                 <div className="title p-10 text-center">
                     <p className='text-xl'>Home / <span className='text-orange-600'>{type}</span></p>
                     <p className='text-4xl pt-6 uppercase font-bold'>{type}</p>
@@ -216,7 +234,7 @@ const BlogListing: React.FC = () => {
                     </div>
                 </div>
             </div>
-            <Footer />
+            {/* <Footer /> */}
         </>
     );
 };

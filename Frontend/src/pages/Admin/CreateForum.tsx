@@ -3,7 +3,7 @@ import axiosAuth from '../../config/axios_auth';
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import BlogEditor from '../../components/common/BlogEditor';
-import { Calendar, Clock, Image, User, Tag } from 'lucide-react';
+import { Calendar, Clock, Image, User } from 'lucide-react';
 
 type User = {
     _id: string;

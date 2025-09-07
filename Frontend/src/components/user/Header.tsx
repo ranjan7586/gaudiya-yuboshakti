@@ -28,6 +28,8 @@ const Header = () => {
         return () => window.removeEventListener('scroll', handleScroll);
     }, [prevScrollPos]);
 
+    
+
     return (
         <header
             className={`fixed top-0 left-0 w-full bg-white z-50 transition-transform duration-500 ease-in-out ${visible ? 'translate-y-0' : '-translate-y-full'

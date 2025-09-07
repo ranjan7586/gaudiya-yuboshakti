@@ -16,6 +16,12 @@ import ScrollToTop from '../contexts/ScrollToTop'
 import ForumsContent from '../components/Admin/ForumsContent'
 import CreateForum from '../pages/Admin/CreateForum'
 import TagsContent from '../components/Admin/TagsContent'
+import VideosContent from '../components/Admin/VideosContent'
+import CreateVideo from '../components/Admin/CreateVideo'
+import ForumApp from '../components/user/Forum'
+import FeaturedVideos from '../components/common/FeaturedVideos'
+import VideoDetails from '../components/common/VideoDetails'
+import UserLayout from '../components/user/UserLayout'
 
 
 const Router = () => {
@@ -23,11 +29,23 @@ const Router = () => {
     <BrowserRouter>
       <ScrollToTop />
       <Routes>
-        <Route path='/' element={<Home />} />
-        <Route path='/headertest' element={<HeaderTest />} />
-        <Route path='/contact-us' element={<ContactUs />} />
-        <Route path='/list/:filter_type/:type' element={<BlogListing />} />
-        <Route path='/blog/details/:blog-id' element={<BlogDetails />} />
+        {/* ---------- USER ROUTES ---------- */}
+        <Route element={<UserLayout />}>
+          <Route path="/" element={<Home />} />
+          <Route path="/headertest" element={<HeaderTest />} />
+          <Route path="/contact-us" element={<ContactUs />} />
+          <Route path="/blog" element={<BlogListing />} />
+          <Route path="/list/:filter_type/:type" element={<BlogListing />} />
+          <Route path="/blog/details/:blog-id" element={<BlogDetails />} />
+          {/* <Route path="/initiative/details/:blog-id" element={<BlogDetails />} /> */}
+          <Route path="/forum" element={<ForumApp mode="page" />} />
+          <Route path="/videos" element={<FeaturedVideos mode="page" />} />
+          <Route path="/videos/:id" element={<VideoDetails />} />
+        </Route>
+
+
+        {/* ---------- ADMIN ROUTES ---------- */}
+
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route path='/admin' element={
           <UserProvider>
@@ -37,14 +55,17 @@ const Router = () => {
           {/* <Route path='add-blog' element={<BlogEditor />} /> */}
           <Route path='dashboard' element={<AdminDashboard />} />
           <Route path='posts' element={<PostsContent />} />
+          <Route path='posts/add-post' element={<CreateBlog />} />
+          <Route path='posts/update-post/:id' element={<CreateBlog is_update={true} />} />
           <Route path='forums' element={<ForumsContent />} />
           <Route path='users' element={<UsersContent />} />
           <Route path='categories' element={<CategoriesContent />} />
           <Route path='tags' element={<TagsContent />} />
-          <Route path='posts/add-post' element={<CreateBlog />} />
+          <Route path="videos" element={<VideosContent />} />
+          <Route path="videos/add-video" element={<CreateVideo />} />
+          <Route path="videos/update-video/:id" element={<CreateVideo is_update={true} />} />
           <Route path='forums/add-forum' element={<CreateForum />} />
           <Route path='forums/update-forum/:id' element={<CreateForum is_update={true} />} />
-          <Route path='posts/update-post/:id' element={<CreateBlog is_update={true} />} />
         </Route>
         {/* <Route path='/admin' element={<AdminPanel />} /> */}
         {/* <Route path='/admin/add-blog' element={<BlogEditor />} /> */}

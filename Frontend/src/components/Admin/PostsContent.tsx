@@ -12,7 +12,8 @@ interface Post {
     _id: number;
     title: string;
     author: any; // or define a type for author if you know it
-    category: any;
+    categories: [],
+    tags: [],
     status: string;
     date: string;
 }
@@ -85,6 +86,7 @@ const PostsContent = () => {
                     <div className="col-span-5">Title</div>
                     <div className="col-span-2">Author</div>
                     <div className="col-span-2">Category</div>
+                    <div className="col-span-2">Tag</div>
                     <div className="col-span-1">Status</div>
                     <div className="col-span-2">Date</div>
                 </div>
@@ -102,7 +104,8 @@ const PostsContent = () => {
                             </div>
                         </div>
                         <div className="col-span-2">{post?.author?.name}</div>
-                        <div className="col-span-2">{post?.category?.name}</div>
+                        <div className="col-span-2">{post?.categories?.map((c: any) => c?.name).join(", ")}</div>
+                        <div className="col-span-2">{post?.tags?.map((c: any) => c?.name).join(", ")}</div>
                         <div className="col-span-1">
                             <span className={`px-2 py-1 rounded-full text-xs ${post.status === 'Published' ? 'bg-green-100 text-green-800' :
                                 post.status === 'Draft' ? 'bg-gray-100 text-gray-800' :

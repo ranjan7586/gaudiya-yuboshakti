@@ -1,6 +1,7 @@
 import Category from "../models/Category";
 import News from "../models/News";
 import { uploadToCloudinary } from "../utils/cloudinary";
+import Tag from "../models/Tag";
 
 class NewsService {
     constructor() { }
@@ -17,33 +18,43 @@ class NewsService {
             data.body.thumbnail_img = result.url;
             console.log(result);
         }
-        // The News.create method will now correctly handle the 'categories' array.
+        // The News.create method will now correctly handle the 'categories' and 'tags' array.
         const result = await News.create(data.body);
         return result;
     }
 
     async getNews(page: number, display_per_page: number, sort_by: string, sort_order: any, filter_by: any, filter_type: string) {
         sort_order = sort_order === 'asc' ? 1 : -1;
-        if (filter_type && filter_by) {
-            if(filter_type === 'category') filter_by = (await Category.findOne({ name: filter_by }).select('_id'))?._id;
-            // Updated populate to use 'categories' (plural)
-            const result = await News.find({ [filter_type]: filter_by, deletedAt: null })
-                .populate('author', ['name', 'profileImage'])
-                .populate('categories', 'name')
-                .sort({ [sort_by]: sort_order })
-                .skip((page - 1) * display_per_page)
-                .limit(display_per_page);
-            return result;
+
+        interface NewsFilter {
+            deletedAt: null;
+            categories?: any;
+            tags?: any;
         }
-        // Updated populate to use 'categories' (plural)
-        const result = await News.find({ deletedAt: null })
+
+        let filterQuery: NewsFilter = { deletedAt: null };
+        console.log(filter_type, filter_by)
+        if (filter_type && filter_by) {
+            if (filter_type === 'category') {
+                filter_by = (await Category.findOne({ slug: filter_by.toLowerCase() }).select('_id'))?._id;
+                filterQuery.categories = filter_by;
+            } else if (filter_type === 'tag') {
+                filter_by = (await Tag.findOne({ slug: filter_by }).select('_id'))?._id;
+                filterQuery.tags = filter_by;
+            }
+        }
+        console.log(filterQuery)
+        // Updated populate to use 'categories' and 'tags'
+        const result = await News.find(filterQuery)
             .populate('author', ['name', 'profileImage'])
-            .populate('categories', 'name')
+            .populate('categories', ['name','slug'])
+            .populate('tags', 'name')
             .sort({ [sort_by]: sort_order })
             .skip((page - 1) * display_per_page)
             .limit(display_per_page);
         return result;
     }
+
 
     async updateNews(data: any) {
         if (data?.file) {
@@ -51,7 +62,7 @@ class NewsService {
             data.body.thumbnail_img = result.url;
             console.log(result);
         }
-        // The findOneAndUpdate method will correctly handle the 'categories' array.
+        // The findOneAndUpdate method will correctly handle the 'categories' and 'tags' array.
         const result = await News.findOneAndUpdate({ _id: data.params.id }, data.body, { new: true });
         return result;
     }
@@ -62,10 +73,11 @@ class NewsService {
     }
 
     async getNewsById(id: string) {
-        // Updated populate to use 'categories' (plural)
+        // Updated populate to use 'categories' and 'tags'
         const result = await News.findOne({ _id: id })
             .populate('author', ['name', 'profileImage'])
-            .populate('categories', 'name');
+            .populate('categories', 'name')
+            .populate('tags', 'name');
         return result;
     }
 }

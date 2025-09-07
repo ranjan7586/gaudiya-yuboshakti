@@ -8,7 +8,10 @@ class CategoryController {
             const sort_by = req.body?.sort_by || 'date';
             const sort_order = req.body?.sort_order || 'desc';
             const display_per_page = req.body?.display_per_page || 10;
-            const result = await CategoryService.getCategories(page, display_per_page, sort_by, sort_order);
+            const get_childs = req.body?.get_childs || false;
+            const parent_slug = req.body?.parent_slug || null;
+
+            const result = await CategoryService.getCategories(page, display_per_page, sort_by, sort_order, get_childs, parent_slug);
             return res.status(200).json({ message: 'Categories fetched successfully', data: result });
         } catch (error) {
             return res.status(500).json({ message: error instanceof Error ? error.message : 'Unknown server error' });

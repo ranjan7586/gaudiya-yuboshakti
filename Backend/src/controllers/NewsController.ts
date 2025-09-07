@@ -5,7 +5,7 @@ class NewsController {
     async create(req: Request, res: Response) {
         try {
             if (!req.body) return res.status(400).json({ message: 'No data provided' });
-            // Updated to check for 'categories' (plural) as an array
+            // Updated to check for 'categories' (plural) as an array. Tags are optional.
             const require_arr = ['title', 'description', 'author', 'categories', 'date'];
             const missing_fields = require_arr.filter((field) => {
                 if (field === 'categories') {
