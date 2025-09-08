@@ -190,25 +190,27 @@ const InitiativesSection: React.FC = () => {
                             className="w-full h-48 object-cover"
                           />
                         </div>
-                        <div className="w-2/3 p-6">
-                          <div className="flex items-center gap-4 mb-3">
-                            <span className="text-yellow-400 text-sm font-medium">
-                              {blog.categories.map(cat => cat.name).join(', ')}
-                            </span>
-                            <span className="text-gray-400 text-sm">
-                              {new Date(blog.date).toLocaleDateString()}
-                            </span>
+                        <Link to={`/blog/details/${blog._id}`}>
+                          <div className="w-2/3 p-6">
+                            <div className="flex items-center gap-4 mb-3">
+                              <span className="text-yellow-400 text-sm font-medium">
+                                {blog.categories.map(cat => cat.name).join(', ')}
+                              </span>
+                              <span className="text-gray-400 text-sm">
+                                {new Date(blog.date).toLocaleDateString()}
+                              </span>
+                            </div>
+                            <h3 className="text-xl font-bold mb-4 leading-tight">
+                              {blog.title}
+                            </h3>
+                            <div className="flex items-center">
+                              <div className="w-8 h-0.5 bg-yellow-400 mr-3"></div>
+                              <span className="text-yellow-400 text-sm font-medium uppercase tracking-wide">
+                                {blog.author.name}
+                              </span>
+                            </div>
                           </div>
-                          <h3 className="text-xl font-bold mb-4 leading-tight">
-                            {blog.title}
-                          </h3>
-                          <div className="flex items-center">
-                            <div className="w-8 h-0.5 bg-yellow-400 mr-3"></div>
-                            <span className="text-yellow-400 text-sm font-medium uppercase tracking-wide">
-                              {blog.author.name}
-                            </span>
-                          </div>
-                        </div>
+                        </Link>
                       </div>
                     </div>
                   ))}

@@ -62,7 +62,7 @@ export default function BlogDetails() {
 
   return (<>
     <Header />
-    <div className="bg-gray-50 min-h-screen font-sans pt-66">
+    <div className="bg-gray-50 min-h-screen font-sans">
       {/* Navigation Bar */}
       <nav className="bg-white shadow-sm">
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
