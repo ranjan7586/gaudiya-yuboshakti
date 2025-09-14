@@ -61,7 +61,7 @@ export default function BlogDetails() {
   }
 
   return (<>
-    <Header />
+    {/* <Header /> */}
     <div className="bg-gray-50 min-h-screen font-sans">
       {/* Navigation Bar */}
       <nav className="bg-white shadow-sm">
@@ -242,7 +242,7 @@ export default function BlogDetails() {
       {/* Footer */}
 
     </div>
-    <Footer />
+    {/* <Footer /> */}
   </>
 
   );

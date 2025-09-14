@@ -1,5 +1,7 @@
 // import React from 'react'
 
+import LogoGY from "../common/LogoGY"
+
 type Props = {}
 
 function Footer({ }: Props) {
@@ -38,6 +40,9 @@ function Footer({ }: Props) {
                                 <a href="#" className="hover:text-white transition">LinkedIn</a>
                             </div>
                         </div>
+                    </div>
+                    <div className="mt-20">
+                        <LogoGY/>
                     </div>
                     <div className="border-t border-gray-700 mt-8 pt-8 text-sm text-center text-gray-400">
                         © {new Date().getFullYear()} DevBlog. All rights reserved.
