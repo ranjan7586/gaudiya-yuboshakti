@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { ChevronRight, Heart, MessageCircle, Share2, Bookmark, Clock, Calendar } from 'lucide-react';
 import axios from 'axios';
-import Header from '../user/Header';
-import Footer from '../user/Footer';
+// import Header from '../user/Header';
+// import Footer from '../user/Footer';
 import { Link } from 'react-router-dom';
 interface Author {
   name: string;

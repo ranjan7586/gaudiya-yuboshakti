@@ -154,7 +154,7 @@ const AdminDashboard = () => {
                 label
                 dataKey="value"
               >
-                {userTypes.map((entry, index) => (
+                {userTypes.map((_entry, index) => (
                   <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                 ))}
               </Pie>
@@ -176,7 +176,7 @@ const AdminDashboard = () => {
                 label
                 dataKey="value"
               >
-                {activeVsDeleted.map((entry, index) => (
+                {activeVsDeleted.map((_entry, index) => (
                   <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                 ))}
               </Pie>

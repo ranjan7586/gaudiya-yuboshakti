@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import {
     User,
-    Mail,
+    // Mail,
     Lock,
     Shield,
-    Image,
-    FileText,
+    // Image,
+    // FileText,
     X,
     Check,
     Eye,
